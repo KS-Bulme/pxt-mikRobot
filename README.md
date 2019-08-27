@@ -1,4 +1,4 @@
-# pxt-mikrobot
+# pxt-mikRobot
 
 
 
