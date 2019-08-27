@@ -1,6 +1,6 @@
 # mikRoboT
 
-Extension for KUST mikRoboT
+Extension for KUST mikRobot
 
 ## License
 
@@ -12,5 +12,5 @@ MIT
 (The metadata above is needed for package search.)
 
 ```package
-mikRoboT=github.com/KS-Bulme/pxt-test
+mikRobot=github.com/KS-Bulme/pxt-mikRobot
 ```
