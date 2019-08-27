@@ -1,4 +1,4 @@
-# mikRoboT
+# mikRobot
 
 Extension for KUST mikRobot
 
