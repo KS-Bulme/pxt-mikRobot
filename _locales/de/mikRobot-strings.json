@@ -1,0 +1,20 @@
+{
+	"Dir.forward|block": "Vorwärts",
+	"Dir.backward|block": "Rückwärts",
+	"Dir.turnRight|block": "Kurve rechts",
+	"Dir.turnLeft|block": "Kurve links",
+	"Dir.stop|block": "Stop",
+	"Sensor.Left|block": "Sensor links",
+	"Sensor.Right|block": "Sensor rechts",
+	"mikRobot.Infrared|block": "IR-Sensor |%index",
+	"mikRobot.MotorRun|block": "Motor |%index|Gas %speed",
+	"mikRobot.Run|block": "%index|Gas %speed",
+	"mikRobot.RunDelay|block": "%index|Gas %speed|für %time|sec",
+	"mikRobot.Ultrasonic|block": "Ultraschall",
+	"mikRobot.SensorCalibrated|block": "Tracking-Sensor-Kalibrierung",
+	"mikRobot.readLine|block": "Position der Linie",
+	"mikRobot.AnalogRead|block": "Tracking-Wert",
+	"mikRobot.readCalibrated|block": "Tracking kalibriert",
+	"mikRobot.ReadSensorMax|block": "Max. Tracking",
+	"mikRobot.ReadSensorMin|block": "Min. Tracking"
+}
