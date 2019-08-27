@@ -1,18 +1,18 @@
 {
-    "name": "pxt-mikrobot",
-    "version": "0.0.0",
-    "description": "",
+    "name": "mikRobot",
+    "version": "1.0.0",
+    "description": "Extension for mikRobot",
+    "license": "MIT",
     "dependencies": {
-        "core": "*",
-        "radio": "*"
+        "core": "*"
     },
     "files": [
         "README.md",
-        "main.ts"
+        "mikRobot.ts",
+        "_locales/de/mikRobot-strings.json"
     ],
     "testFiles": [
         "test.ts"
     ],
-    "public": false,
-    "additionalFilePaths": []
+    "public": true
 }
