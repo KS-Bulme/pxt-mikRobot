@@ -10,6 +10,13 @@ enum Motors {
     M2 = 0x2,
 }
 
+enum Servos {
+    //% block="S1"
+    S1 = 0x1,
+    //% block="S2"
+    S2 = 0x2,
+}
+
 enum Sensor {
     //% block="Left"
     Left = 0x1,
@@ -125,6 +132,30 @@ namespace mikRobot {
         buf[4] = (off >> 8) & 0xff;
         pins.i2cWriteBuffer(PCA9685_ADDRESS, buf);
     }
+	
+    //% blockId=mikRobot_servo block="Servo|%index| to %pos"
+    //% pos eg: 90
+    //% weight=100
+    //% pos.min=0 speed.max=180
+    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
+    export function Servo(index: Servos, pos: number): void {
+        if (!initialized) {
+            initPCA9685()
+        }
+        pos = pos * 16; // map 180 to 4096 (datenblatt PCA zykluszeit?)
+        if (pos > 180) {
+            pos = 180
+        }
+        if (pos < 0) {
+            pos = 0
+        }
+        if (index == 1) {
+            setPwm(8, 0, pos)
+        } else if (index == 2) {
+	    setPwm(9, 0, pos)
+        }
+    }	
+	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 150
     //% weight=100
