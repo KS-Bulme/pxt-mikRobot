@@ -137,31 +137,6 @@ namespace mikRobot {
         pins.i2cWriteBuffer(PCA9685_ADDRESS, buf);
     }
 	
-    //% blockId=mikRobot_servo block="Servo|%index| to %pos"
-    //% pos eg: 90
-    //% weight=100
-    //% pos.min=0 pos.max=180
-    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
-    export function Servo(index: Servos, pos: number): void {
-        if (!initialized) {
-            initPCA9685()
-        }
-	if (pos > 180) {
-            pos = 180
-        }
-        if (pos < 0) {
-            pos = 0
-        }
-	    
-	//% map 180 to 4096 (http://wiki.sunfounder.cc/index.php?title=PCA9685_16_Channel_12_Bit_PWM_Servo_Driver)
-	pos = (MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0) / 1000000 * FREQUENCY * 4096;
-        
-        if (index == 1) {
-            setPwm(8, 0, pos)
-        } else if (index == 2) {
-	    setPwm(9, 0, pos)
-        }
-    }	
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 150
