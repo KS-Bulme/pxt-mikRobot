@@ -57,6 +57,10 @@ namespace mikRobot {
     const ALL_LED_ON_H = 0xFB
     const ALL_LED_OFF_L = 0xFC
     const ALL_LED_OFF_H = 0xFD
+    const MIN_PULSE_WIDTH = 650
+    const MAX_PULSE_WIDTH = 2350
+    const DEFAULT_PULSE_WIDTH = 1500
+    const FREQUENCY = 500    
 
     const STP_CHA_L = 2047
     const STP_CHA_H = 4095
@@ -96,7 +100,7 @@ namespace mikRobot {
 
     function initPCA9685(): void {
         i2cwrite(PCA9685_ADDRESS, MODE1, 0x00)
-        setFreq(500);
+        setFreq(FREQUENCY);
         setPwm(0, 0, 4095);
         for (let idx = 1; idx < 16; idx++) {
             setPwm(idx, 0, 0);
@@ -136,19 +140,22 @@ namespace mikRobot {
     //% blockId=mikRobot_servo block="Servo|%index| to %pos"
     //% pos eg: 90
     //% weight=100
-    //% pos.min=0 speed.max=180
+    //% pos.min=0 pos.max=180
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function Servo(index: Servos, pos: number): void {
         if (!initialized) {
             initPCA9685()
         }
-        pos = pos * 16; // map 180 to 4096 (datenblatt PCA zykluszeit?)
-        if (pos > 180) {
+	if (pos > 180) {
             pos = 180
         }
         if (pos < 0) {
             pos = 0
         }
+	    
+	// map 180 to 4096 (http://wiki.sunfounder.cc/index.php?title=PCA9685_16_Channel_12_Bit_PWM_Servo_Driver)
+	pos = (MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0) / 1000000 * FREQUENCY * 4096;
+        
         if (index == 1) {
             setPwm(8, 0, pos)
         } else if (index == 2) {
