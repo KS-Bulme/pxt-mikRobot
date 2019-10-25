@@ -60,7 +60,8 @@ namespace mikRobot {
     const MIN_PULSE_WIDTH = 650
     const MAX_PULSE_WIDTH = 2350
     const DEFAULT_PULSE_WIDTH = 1500
-    const FREQUENCY = 500    
+    const FREQUENCY = 50
+    // const FREQUENCY = 500
 
     const STP_CHA_L = 2047
     const STP_CHA_H = 4095
