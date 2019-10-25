@@ -146,15 +146,15 @@ namespace mikRobot {
         if (!initialized) {
             initPCA9685()
         }
-	if (pos > 180) {
-            pos = 180
+	if (pos > 90) {
+            pos = MAX_PULSE_WIDTH
         }
-        if (pos < 0) {
-            pos = 0
+        if (pos < 90) {
+            pos = MIN_PULSE_WIDTH
         }
 	    
 	// map 180 to 4096 (http://wiki.sunfounder.cc/index.php?title=PCA9685_16_Channel_12_Bit_PWM_Servo_Driver)
-	pos = MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0;
+	// pos = MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0;
 	// pos = DEFAULT_PULSE_WIDTH;
         
         if (index == 1) {
