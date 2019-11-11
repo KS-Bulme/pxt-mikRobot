@@ -119,7 +119,8 @@ namespace mikRobot {
         let oldmode = i2cread(PCA9685_ADDRESS, MODE1);
         let newmode = (oldmode & 0x7F) | 0x10; // sleep
         i2cwrite(PCA9685_ADDRESS, MODE1, newmode); // go to sleep
-        i2cwrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
+        //i2cwrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
+	i2cwrite(PCA9685_ADDRESS, PRESCALE, 0x79);  // 121d = (25MHz/(4096*50Hz)) - 1
         i2cwrite(PCA9685_ADDRESS, MODE1, oldmode);
         control.waitMicros(5000);
         i2cwrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1);
