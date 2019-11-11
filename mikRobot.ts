@@ -48,8 +48,7 @@ namespace mikRobot {
     const SUBADR1 = 0x02
     const SUBADR2 = 0x03
     const SUBADR3 = 0x04
-    const PRESCALE = 0xF3
-    // 0xF3 = 243d für 50Hz (Servo-PWM), default 23,9Hz (0xFE)
+    const PRESCALE = 0xFE // register for prescaler
     const LED0_ON_L = 0x06
     const LED0_ON_H = 0x07
     const LED0_OFF_L = 0x08
@@ -61,7 +60,8 @@ namespace mikRobot {
     const MIN_PULSE_WIDTH = 205
     const MAX_PULSE_WIDTH = 409
     const DEFAULT_PULSE_WIDTH = 307
-    const FREQUENCY = 500
+    const FREQUENCY = 50 // 50Hz for servo PWM
+//    const FREQUENCY = 500
 
     const STP_CHA_L = 2047
     const STP_CHA_H = 4095
