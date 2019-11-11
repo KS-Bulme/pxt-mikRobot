@@ -8,7 +8,7 @@
 	"Sensor.Right|block": "Sensor rechts",
 	"mikRobot.Infrared|block": "IR-Sensor |%index",
 	"mikRobot.MotorRun|block": "Motor |%index|Gas %speed",
-	"mikRobot.Servo|block": "schreibe Servo |%index|auf %pos",
+	"mikRobot.Servo|block": "KS schreibe Servo |%index|auf %pos",
 	"mikRobot.Run|block": "%index|Gas %speed",
 	"mikRobot.RunDelay|block": "%index|Gas %speed|für %time|sec",
 	"mikRobot.Ultrasonic|block": "Ultraschall",
