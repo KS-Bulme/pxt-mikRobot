@@ -60,8 +60,8 @@ namespace mikRobot {
     const MIN_PULSE_WIDTH = 205
     const MAX_PULSE_WIDTH = 409
     const DEFAULT_PULSE_WIDTH = 307
-    const FREQUENCY = 50 // 50Hz for servo PWM
-//    const FREQUENCY = 500
+//    const FREQUENCY = 50 // 50Hz for servo PWM
+    const FREQUENCY = 500
 
     const STP_CHA_L = 2047
     const STP_CHA_H = 4095
@@ -119,8 +119,8 @@ namespace mikRobot {
         let oldmode = i2cread(PCA9685_ADDRESS, MODE1);
         let newmode = (oldmode & 0x7F) | 0x10; // sleep
         i2cwrite(PCA9685_ADDRESS, MODE1, newmode); // go to sleep
-        //i2cwrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
-	i2cwrite(PCA9685_ADDRESS, PRESCALE, 0x79);  // 0x79 = 121d = (25MHz/(4096*50Hz)) - 1
+        i2cwrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
+	//i2cwrite(PCA9685_ADDRESS, PRESCALE, 0x79);  // 0x79 = 121d = (25MHz/(4096*50Hz)) - 1
         i2cwrite(PCA9685_ADDRESS, MODE1, oldmode);
         control.waitMicros(5000);
         i2cwrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1);
