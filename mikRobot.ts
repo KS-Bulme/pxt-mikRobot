@@ -141,7 +141,7 @@ namespace mikRobot {
 
     //% blockId=mikRobot_servo block="write Servo|%index| to %pos"
     //% pos eg: 90
-    //% weight=50 advanced=true
+    //% weight=20 advanced=true
     //% pos.min=0 pos.max=180
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function Servo(index: Servos, pos: number): void {
@@ -169,7 +169,7 @@ namespace mikRobot {
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 50
-    //% weight=80
+    //% weight=82
     //% speed.min=-255 speed.max=255 eg: 50
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function MotorRun(index: Motors, speed: number): void {
@@ -405,7 +405,7 @@ namespace mikRobot {
     // stored separately for each sensor, so that differences in the
     // sensors are accounted for automatically.
     //% blockId=mikRobot_ReadCalibrated block="ReadCalibrated"
-    //% weight=70 advanced=true
+    //% weight=80 advanced=true
     export function readCalibrated(): number[] {
         // read the needed values
         let sensor_values = AnalogRead();
@@ -423,7 +423,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_readLine block="ReadLine"
-    //% weight=10
+    //% weight=20
     export function readLine(): number {
 
         let i = 0;
