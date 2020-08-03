@@ -277,34 +277,19 @@ namespace mikRobot {
     //% weight=80
     export function Ultrasonic(): number {
 	let d = 0;
-	for (let i = 0; i < 10; i++) {
-		// send pulse
-		pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
-		pins.digitalWritePin(DigitalPin.P1, 0);
-		control.waitMicros(2);
-		pins.digitalWritePin(DigitalPin.P1, 1);
-		control.waitMicros(10);
-		pins.digitalWritePin(DigitalPin.P1, 0);
+	// send pulse
+	pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
+	pins.digitalWritePin(DigitalPin.P1, 0);
+	control.waitMicros(2);
+	pins.digitalWritePin(DigitalPin.P1, 1);
+	control.waitMicros(10);
+	pins.digitalWritePin(DigitalPin.P1, 0);
 
-		// read pulse, timeout 30000us
-		d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
-		if (d != 0) {
-			break;
-		}
-	}
-	    /*
-	for (; n>1; --n) {  // bubble sort
-    		for (i=0; i<(n-1); ++i) {
-      			if (values[i] > values[i+1]){
-				values[i], values[i+1] = values[i+1], values[i]
-        			// temp = values[i];
-				// values[i] = values[i+1];
-				// values[i+1] = temp;
-      			}
-    		}
-  	}  */
+	// read pulse, timeout 30000us
+	d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
+
 	if (d == 0) {
-		return 100;  // wrong sensor value -> hardcoded to 100cm
+		return 100;  // wrong sensor value or timeout -> result hardcoded to 100cm
 	} else {
 		return d / 37; // hand-measured factor (instead of 58)
 	}
