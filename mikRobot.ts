@@ -468,7 +468,7 @@ namespace mikRobot {
         return last_value;
     }
 	
-    //% blockId=mikRobot_infrared2 block="Infrared2 |%index| %limit"
+    //% blockId=mikRobot_infrared2 block="Infrared2 |%index| Grenze %limit"
     //% limit eg: 5
     //% weight=9 advanced=true
     //% limit.min=0 pos.max=10
