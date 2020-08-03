@@ -276,9 +276,8 @@ namespace mikRobot {
     //% blockId=mikRobot_ultrasonic block="Ultrasonic"
     //% weight=80
     export function Ultrasonic(): number {
-	let i = 0;
 	let d = 0;
-	for (i = 0; i < 10; i++) {
+	for (let i = 0; i < 10; i++) {
 		// send pulse
 		pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
 		pins.digitalWritePin(DigitalPin.P1, 0);
@@ -289,7 +288,7 @@ namespace mikRobot {
 
 		// read pulse, timeout 30000us
 		d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
-		if (d <> 0) {
+		if (d != 0) {
 			break;
 		}
 	}
