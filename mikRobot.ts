@@ -276,7 +276,6 @@ namespace mikRobot {
     //% blockId=mikRobot_ultrasonic block="Ultrasonic"
     //% weight=80
     export function Ultrasonic(): number {
-	let d = 0;
 	// send pulse
 	pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
 	pins.digitalWritePin(DigitalPin.P1, 0);
@@ -286,14 +285,15 @@ namespace mikRobot {
 	pins.digitalWritePin(DigitalPin.P1, 0);
 
 	// read pulse, timeout 30000us
-	d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
+	let d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
 
 	if (d == 0) {
-		return 100;  // wrong sensor value or timeout -> result hardcoded to 100cm
+		// wrong sensor value or timeout -> result hardcoded to 100cm
+		return 100;
 	} else {
-		return d / 37; // hand-measured factor (instead of 58)
+		// hand-measured factor (instead of 58)
+		return d / 37;
 	}
-
     }
 
     //% blockId=mikRobot_AnalogRead block="AnalogRead"
