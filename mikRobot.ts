@@ -292,8 +292,8 @@ namespace mikRobot {
 		// read pulse
 		values[i] = pins.pulseIn(DigitalPin.P2, PulseValue.High, 11600);
 	}
-	for (; n>1; --n){  // bubble sort
-    		for (i=0; i<n-1; ++i) {
+	for (n=3; n>1; n--) {  // bubble sort
+    		for (i=0; i<(n-1); i++) {
       			if (values[i] > values[i+1]){
 				// values[i], values[i+1] = values[i+1], values[i]
         			temp = values[i];
