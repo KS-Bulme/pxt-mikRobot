@@ -256,7 +256,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_infrared block="Infrared |%index"
-    //% weight=70
+    //% weight=65
     export function Infrared(index: Sensor): boolean {
         let value = true;
         pins.setPull(DigitalPin.P12, PinPullMode.PullUp);
@@ -297,7 +297,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_AnalogRead block="AnalogRead"
-    //% weight=80 advanced=true
+    //% weight=70
     export function AnalogRead(): number[] {
         if (!initialized) {
             initPCA9685()
@@ -338,7 +338,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_SensorCalibrated block="SensorCalibrated"
-    //% weight=70 
+    //% weight=70 advanced=true
     export function SensorCalibrated(): void {
         let i = 0;
         let j = 0;
