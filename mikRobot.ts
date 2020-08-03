@@ -468,7 +468,7 @@ namespace mikRobot {
         return last_value;
     }
 	
-    //% blockId=mikRobot_infrared2 block="Infrared2 |%index| Grenz %limit"
+    //% blockId=mikRobot_infrared2 block="Infrared2 |%index| value %limit"
     //% limit eg: 5
     //% weight=9 advanced=true
     //% limit.min=0 limit.max=10
@@ -512,11 +512,11 @@ namespace mikRobot {
         }
 
         if (index == 0x01) {
-            if (sensor_values[5] < (limit*102)) {
+            if (sensor_values[5] < (limit*100+23)) {
                 value = false;
             }
         } else {
-            if (sensor_values[6] < (limit*102)) {
+            if (sensor_values[6] < (limit*100+23)) {
                 value = false;
             }
         }
