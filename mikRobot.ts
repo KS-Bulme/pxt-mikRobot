@@ -276,18 +276,33 @@ namespace mikRobot {
     //% blockId=mikRobot_ultrasonic block="Ultrasonic"
     //% weight=80
     export function Ultrasonic(): number {
+	let i = 0;
+	let n = 3;
+	let values = [0, 0, 0];
+	let temp = 0;
+	for (i = 0; i < 3; i++) {
+		// send pulse
+		pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
+		pins.digitalWritePin(DigitalPin.P1, 0);
+		control.waitMicros(2);
+		pins.digitalWritePin(DigitalPin.P1, 1);
+		control.waitMicros(10);
+		pins.digitalWritePin(DigitalPin.P1, 0);
 
-        // send pulse
-        pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
-        pins.digitalWritePin(DigitalPin.P1, 0);
-        control.waitMicros(2);
-        pins.digitalWritePin(DigitalPin.P1, 1);
-        control.waitMicros(10);
-        pins.digitalWritePin(DigitalPin.P1, 0);
-
-        // read pulse
-        let d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 11600);
-        return d / 58;
+		// read pulse
+		values[i] = pins.pulseIn(DigitalPin.P2, PulseValue.High, 11600);
+	}
+	for (; n>1; --n){  // bubble sort
+    		for (i=0; i<n-1; ++i) {
+      			if (values[i] > values[i+1]){
+				// values[i], values[i+1] = values[i+1], values[i]
+        			temp = values[i];
+				values[i] = values[i+1];
+				values(i+1] = temp;
+      			}
+    		}
+  	}   
+	return values[1] / 58;
     }
 
     //% blockId=mikRobot_AnalogRead block="AnalogRead"
