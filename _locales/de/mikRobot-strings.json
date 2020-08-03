@@ -8,7 +8,7 @@
 	"Sensor.Right|block": "rechts",
 	"Motors.Left|block": "links",
 	"Motors.Right|block": "rechts",	
-	"mikRobot.Infrared|block": "Hindernis-Sensor |%index",
+	"mikRobot.Infrared|block": "Hindernis |%index",
 	"mikRobot.MotorRun|block": "Motor |%index|Gas %speed",
 	"mikRobot.Servo|block": "Setze Servo |%index|auf %pos",
 	"mikRobot.Run|block": "Fahre %index|Gas %speed",
@@ -20,5 +20,5 @@
 	"mikRobot.readCalibrated|block": "Linien-Sensor kalibriert",
 	"mikRobot.ReadSensorMax|block": "Max. Linien-Sensor Werte",
 	"mikRobot.ReadSensorMin|block": "Min. Linien-Sensor Werte",
-	"mikRobot.Infrared2|block": "Hindernis-Sensor2 |%index|Grenze %limit"
+	"mikRobot.Infrared2|block": "Hindernis2 |%index|Grenze %limit"
 }
