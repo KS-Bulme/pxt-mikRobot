@@ -168,7 +168,7 @@ namespace mikRobot {
     }		
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
-    //% speed eg: 150
+    //% speed eg: 50
     //% weight=100
     //% speed.min=-255 speed.max=255
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
