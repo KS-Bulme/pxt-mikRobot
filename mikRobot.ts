@@ -141,7 +141,7 @@ namespace mikRobot {
 
     //% blockId=mikRobot_servo block="write Servo|%index| to %pos"
     //% pos eg: 90
-    //% weight=100
+    //% weight=50 advanced=true
     //% pos.min=0 pos.max=180
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function Servo(index: Servos, pos: number): void {
@@ -169,7 +169,7 @@ namespace mikRobot {
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 50
-    //% weight=100
+    //% weight=80
     //% speed.min=-255 speed.max=255 eg: 50
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function MotorRun(index: Motors, speed: number): void {
@@ -256,7 +256,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_infrared block="Infrared |%index"
-    //% weight=80
+    //% weight=70
     export function Infrared(index: Sensor): boolean {
         let value = true;
         pins.setPull(DigitalPin.P12, PinPullMode.PullUp);
@@ -470,7 +470,7 @@ namespace mikRobot {
 	
     //% blockId=mikRobot_infrared2 block="Infrared2 |%index| value %limit"
     //% limit eg: 5
-    //% weight=9 advanced=true
+    //% weight=60 advanced=true
     //% limit.min=0 limit.max=10
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4	
     export function Infrared2(index: Sensor, limit: number): boolean {
