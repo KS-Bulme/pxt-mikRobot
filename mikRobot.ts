@@ -170,7 +170,7 @@ namespace mikRobot {
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 50
     //% weight=100
-    //% speed.min=-255 speed.max=255
+    //% speed.min=-255 speed.max=255 eg: 50
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function MotorRun(index: Motors, speed: number): void {
         if (!initialized) {
@@ -207,12 +207,12 @@ namespace mikRobot {
     }
 	/**
 	 * Execute single motors 
-	 * @param speed [-255-255] speed of motor; eg: 150
+	 * @param speed [-255-255] speed of motor; eg: 50
 	*/
     //% blockId=mikRobot_run block="|%index|speed %speed"
-    //% speed eg: 150
+    //% speed eg: 50
     //% weight=95
-    //% speed.min=-255 speed.max=255 eg: 150
+    //% speed.min=-255 speed.max=255 eg: 50
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function Run(index: Dir, speed: number): void {
         switch (index) {
@@ -241,13 +241,13 @@ namespace mikRobot {
 
 	/**
 	 * Execute single motors 
-	 * @param speed [-255-255] speed of motor; eg: 150
+	 * @param speed [-255-255] speed of motor; eg: 50
 	 * @param time dalay second time; eg: 2
 	*/
     //% blockId=mikRobot_run_delay block="|%index|speed %speed|for %time|sec"
-    //% speed eg: 150
+    //% speed eg: 50
     //% weight=90
-    //% speed.min=-255 speed.max=255 eg: 150
+    //% speed.min=-255 speed.max=255 eg: 50
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function RunDelay(index: Dir, speed: number, time: number): void {
         Run(index, speed);
