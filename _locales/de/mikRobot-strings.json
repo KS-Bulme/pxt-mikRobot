@@ -19,5 +19,6 @@
 	"mikRobot.AnalogRead|block": "Linien-Sensor Werte",
 	"mikRobot.readCalibrated|block": "Linien-Sensor kalibriert",
 	"mikRobot.ReadSensorMax|block": "Max. Linien-Sensor Werte",
-	"mikRobot.ReadSensorMin|block": "Min. Linien-Sensor Werte"
+	"mikRobot.ReadSensorMin|block": "Min. Linien-Sensor Werte",
+	"mikRobot.Infrared2|block": "Hindernis-Sensor2 |%index|Grenze %limit"
 }
