@@ -468,7 +468,7 @@ namespace mikRobot {
         return last_value;
     }
 	
-    //% blockId=mikRobot_infrared2 block="Infrared2 |%index"
+    //% blockId=mikRobot_infrared2 block="Infrared2 |%index %limit|"
     //% weight=9 advanced=true
     export function Infrared2(index: Sensor, limit: number): boolean {
         if (!initialized) {
