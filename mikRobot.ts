@@ -292,17 +292,21 @@ namespace mikRobot {
 		// read pulse
 		values[i] = pins.pulseIn(DigitalPin.P2, PulseValue.High, 11600);
 	}
-	for (n=3; n>1; --n) {  // bubble sort
+	for (; n>1; --n) {  // bubble sort
     		for (i=0; i<(n-1); ++i) {
       			if (values[i] > values[i+1]){
-				// values[i], values[i+1] = values[i+1], values[i]
-        			temp = values[i];
-				values[i] = values[i+1];
-				values[i+1] = temp;
+				values[i], values[i+1] = values[i+1], values[i]
+        			// temp = values[i];
+				// values[i] = values[i+1];
+				// values[i+1] = temp;
       			}
     		}
-  	}   
-	return values[1] / 58;
+  	}
+	if (values[1] == 0) {
+		return 100;  // wrong sensor value -> hardcoded to 100cm
+	} else {
+		return values[1] / 58;
+	}
     }
 
     //% blockId=mikRobot_AnalogRead block="AnalogRead"
