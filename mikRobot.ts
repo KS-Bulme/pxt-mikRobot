@@ -467,4 +467,56 @@ namespace mikRobot {
 
         return last_value;
     }
+	
+    //% blockId=mikRobot_infrared2 block="Infrared2 |%index"
+    //% weight=9 advanced=true
+    export function Infrared2(index: Sensor, limit: number): boolean {
+        if (!initialized) {
+            initPCA9685()
+        }
+        let i = 0;
+        let j = 0;
+        let channel = 0;
+        let value = true;
+        let values = [0, 0, 0, 0, 0, 0, 0, 0];
+        let sensor_values = [0, 0, 0, 0, 0, 0, 0];
+        //pins.digitalWritePin(DigitalPin.P16, 0);
+        setPwm(0, 0, 0);
+        basic.pause(2);
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 10; j++) {
+                //0 to 4 clock transfer channel address
+                if (j < 4) {
+                    if ((i >> (3 - j)) & 0x01) {
+                        pins.digitalWritePin(DigitalPin.P15, 1);
+                    } else {
+                        pins.digitalWritePin(DigitalPin.P15, 0);
+                    }
+                }
+                //0 to 10 clock receives the previous conversion result
+                values[i] <<= 1;
+                if (pins.digitalReadPin(DigitalPin.P14)) {
+                    values[i] |= 0x01;
+                }
+                pins.digitalWritePin(DigitalPin.P13, 1);
+                pins.digitalWritePin(DigitalPin.P13, 0);
+            }
+        }
+        //pins.digitalWritePin(DigitalPin.P16, 1);
+        setPwm(0, 0, 4095);
+        for (i = 0; i < 7; i++) {
+            sensor_values[i] = values[i + 1];
+        }
+
+        if (index == 0x01) {
+            if (sensor_values[5] < limit) {
+                value = false;
+            }
+        } else {
+            if (sensor_values[6] < limit) {
+                value = false;
+            }
+        }
+        return value;
+    }
 }   
