@@ -338,7 +338,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_SensorCalibrated block="SensorCalibrated"
-    //% weight=70 advanced=true
+    //% weight=90 advanced=true
     export function SensorCalibrated(): void {
         let i = 0;
         let j = 0;
