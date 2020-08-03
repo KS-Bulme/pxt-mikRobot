@@ -4,10 +4,10 @@
  */
 
 enum Motors {
-    //% block="M1"
-    M1 = 0x1,
-    //% block="M2"
-    M2 = 0x2,
+    //% block="Left"
+    Left = 0x1,
+    //% block="Right"
+    Right = 0x2,
 }
 
 enum Servos {
@@ -217,24 +217,24 @@ namespace mikRobot {
     export function Run(index: Dir, speed: number): void {
         switch (index) {
             case Dir.forward:
-                MotorRun(Motors.M1, speed);
-                MotorRun(Motors.M2, speed);
+                MotorRun(Motors.Left, speed);
+                MotorRun(Motors.Right, speed);
                 break;
             case Dir.backward:
-                MotorRun(Motors.M1, -speed);
-                MotorRun(Motors.M2, -speed);
+                MotorRun(Motors.Left, -speed);
+                MotorRun(Motors.Right, -speed);
                 break;
             case Dir.turnRight:
-                MotorRun(Motors.M1, speed);
-                MotorRun(Motors.M2, -speed);
+                MotorRun(Motors.Left, speed);
+                MotorRun(Motors.Right, -speed);
                 break;
             case Dir.turnLeft:
-                MotorRun(Motors.M1, -speed);
-                MotorRun(Motors.M2, speed);
+                MotorRun(Motors.Left, -speed);
+                MotorRun(Motors.Right, speed);
                 break;
             case Dir.stop:
-                MotorRun(Motors.M1, 0);
-                MotorRun(Motors.M2, 0);
+                MotorRun(Motors.Left, 0);
+                MotorRun(Motors.Right, 0);
                 break;
         }
     }
