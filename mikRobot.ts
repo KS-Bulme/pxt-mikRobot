@@ -468,10 +468,10 @@ namespace mikRobot {
         return last_value;
     }
 	
-    //% blockId=mikRobot_infrared2 block="Infrared2 |%index| Grenze %limit"
+    //% blockId=mikRobot_infrared2 block="Infrared2 |%index| Grenz %limit"
     //% limit eg: 5
     //% weight=9 advanced=true
-    //% limit.min=0 pos.max=10
+    //% limit.min=0 limit.max=10
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4	
     export function Infrared2(index: Sensor, limit: number): boolean {
         if (!initialized) {
