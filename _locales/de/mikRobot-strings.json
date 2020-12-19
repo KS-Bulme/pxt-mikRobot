@@ -14,6 +14,8 @@
 	"mikRobot.Run|block": "Fahre %index|Gas %speed",
 	"mikRobot.RunDelay|block": "Fahre %index|Gas %speed|für %time|Sek.",
 	"mikRobot.Ultrasonic|block": "Ultraschall",
+	"mikRobot.Gyro|block": "Kreiselsensor",
+	"mikRobot.GyroReset|block": "Kreisels. zurücksetzen",
 	"mikRobot.SensorCalibrated|block": "Linien-Sensor-Kalibrierung",
 	"mikRobot.readLine|block": "Position der Linie",
 	"mikRobot.AnalogRead|block": "Linien-Sensor Werte",
