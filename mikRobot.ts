@@ -216,12 +216,12 @@ namespace mikRobot {
         let oldreg = i2cread(GYRO_ADDRESS, 0x6A); // RA_USER_CTRL
         let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
         i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
-	control.waitMicros(2);
+	//control.waitMicros(2);
 	    
-	//z = (high << 1) * 128 + low;
-	//if (high >> 7) {
-	//    z= (-1)*z;
-	//}
+	z = high * 256 + low;
+	if (high && 0x80) {
+	    z -= 65536;
+	}
 	return z;
     }	
 	
