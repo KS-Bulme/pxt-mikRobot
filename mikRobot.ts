@@ -211,14 +211,19 @@ namespace mikRobot {
         let low = i2cread(GYRO_ADDRESS, 0x48); // GYRO_ZOUT_L
         control.waitMicros(2);   
    
-          //mpu.resetFIFO();
-	  // 76543210 bit numbers
-          let oldreg = i2cread(GYRO_ADDRESS, 0x6A); // RA_USER_CTRL
-          let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
-          i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
-	  control.waitMicros(2);
-  
-	return (high * 256 + low);
+        //mpu.resetFIFO();
+	// 76543210 bit numbers
+        let oldreg = i2cread(GYRO_ADDRESS, 0x6A); // RA_USER_CTRL
+        let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
+        i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
+	control.waitMicros(2);
+	    
+	z = (high<<1) * 128 + low)
+	if (high>>7) {
+	    return (-1)*z;
+	} else {
+	    return z;
+	}
     }	
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
