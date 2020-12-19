@@ -192,7 +192,7 @@ namespace mikRobot {
 	
     //% blockId=mikRobot_GyroReset block="GyroReset"
     //% weight=18 advanced=true	
-    export function Gyro_Reset(): void {
+    export function GyroReset(): void {
         if (!gyro_init) {
             initGyro()
         }
