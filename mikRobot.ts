@@ -180,7 +180,7 @@ namespace mikRobot {
 	    setPwm(9, 0, pos)
         }
     }
-    //% blockId=mikRobot_gyro_reset block="reset gyro"
+    //% blockId=mikRobot_gyro_reset block="Gyro reset"
     //% weight=18 advanced=true	
     export function Gyro_Reset(): void {
         if (!gyro_init) {
