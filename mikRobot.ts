@@ -219,7 +219,7 @@ namespace mikRobot {
 	//control.waitMicros(2);
 	
 	z = high * 256 + low
-	if (high && 0x80) {
+	if (high & 0x80) {
 	    z -= 65536;
 	}
 	return z;
