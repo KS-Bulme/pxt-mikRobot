@@ -217,8 +217,8 @@ namespace mikRobot {
         let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
         i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
 	//control.waitMicros(2);
-	    
-	z = high * 256 + low;
+	
+	z = high * 256 + low
 	if (high && 0x80) {
 	    z -= 65536;
 	}
