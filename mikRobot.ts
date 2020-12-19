@@ -206,12 +206,9 @@ namespace mikRobot {
     //% weight=17 advanced=true
     export function Gyro(): number { 
 	let z = 0;
- 
-        pins.i2cWriteNumber(GYRO_ADDRESS, 0x47, NumberFormat.UInt8BE);  // GYRO_ZOUT_H
-        let high = pins.i2cReadNumber(GYRO_ADDRESS, NumberFormat.UInt8BE);
+        let high = i2cread(GYRO_ADDRESS, 0x47); // GYRO_ZOUT_H
         basic.pause(2);
-        pins.i2cWriteNumber(GYRO_ADDRESS, 0x48, NumberFormat.UInt8BE);  // GYRO_ZOUT_L
-        let low = pins.i2cReadNumber(GYRO_ADDRESS, NumberFormat.UInt8BE);
+        let low = i2cread(GYRO_ADDRESS, 0x48); // GYRO_ZOUT_L
         basic.pause(2);    
    
           //mpu.resetFIFO();
@@ -221,7 +218,7 @@ namespace mikRobot {
           i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
 	  basic.pause(2);
   
-	return (high*256+low);
+	return high*256+low;
     }	
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
