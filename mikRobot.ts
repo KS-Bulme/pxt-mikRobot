@@ -43,6 +43,7 @@ enum Dir {
 //% weight=5 color=#0fbc11 icon="\uf113"
 namespace mikRobot {
     const PCA9685_ADDRESS = 0x40
+    const GYRO_ADDRESS = 0x68
     const MODE1 = 0x00
     const MODE2 = 0x01
     const SUBADR1 = 0x02
@@ -76,6 +77,7 @@ namespace mikRobot {
     const STP_CHD_H = 1023
 
     let initialized = false
+    let gyro_init = false
     let last_value = 0; // assume initially that the line is left.
     let calibratedMax = [650, 650, 650, 650, 650];
     let calibratedMin = [100, 100, 100, 100, 100];
@@ -108,6 +110,18 @@ namespace mikRobot {
         }
         initialized = true
     }
+	
+    function initGyro(): void {
+        i2cwrite(GYRO_ADDRESS, 0x6B, 0x02, 0x03, 0x01)  // RA_PWR_MGMT_1: PWR1_CLKSET_BIT = MPU6050_CLOCK_PLL_XGYRO
+	basic.pause(2);
+	i2cwrite(GYRO_ADDRESS, 0x1B, 0x04, 0x02, 0x00)  // RA_GYRO_CONFIG: GCONFIG_FS_SEL_BIT = MPU6050_GYRO_FS_250
+	basic.pause(2);	    
+	i2cwrite(GYRO_ADDRESS, 0x1C, 0x04, 0x02, 0x00)  // RA_ACCEL_CONFIG: ACONFIG_AFS_SEL_BIT = MPU6050_ACCEL_FS_2
+	basic.pause(2);
+	i2cwrite(GYRO_ADDRESS, 0x6B, 0x06, 0x00)  // RA_PWR_MGMT_1: PWR1_SLEEP_BIT = disabled
+	basic.pause(2);	 	    
+        gyro_init = true
+    }	
 
     function setFreq(freq: number): void {
         // Constrain the frequency
@@ -165,7 +179,48 @@ namespace mikRobot {
         } else if (index == 2) {
 	    setPwm(9, 0, pos)
         }
-    }		
+    }
+    //% blockId=mikRobot_gyro_reset block="reset gyro"
+    //% weight=18 advanced=true	
+    export function Gyro_Reset(): void {
+        if (!gyro_init) {
+            initGyro()
+        }
+	i2cwrite(GYRO_ADDRESS, 0x02, 0x06, 0x06, 0x00)  // set Z gyro offset = 0 MPU650_RA_ZG_OFFS_TC
+	basic.pause(2);		
+    }
+	
+    //% blockId=mikRobot_gyro block="Gyro"
+    //% weight=17
+    export function Gyro(): number { 
+	let z = 0;
+
+	    
+	return z;
+    }	
+	
+    //% blockId=mikRobot_ultrasonic block="Ultrasonic"
+    //% weight=80
+    export function Ultrasonic(): number {
+	// send pulse
+	pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
+	pins.digitalWritePin(DigitalPin.P1, 0);
+	control.waitMicros(2);
+	pins.digitalWritePin(DigitalPin.P1, 1);
+	control.waitMicros(10);
+	pins.digitalWritePin(DigitalPin.P1, 0);
+
+	// read pulse, timeout 30000us
+	let d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
+
+	if (d == 0) {
+		// wrong sensor value or timeout -> result hardcoded to 100cm
+		return 100;
+	} else {
+		// hand-measured factor (instead of 58)
+		return d / 37;
+	}
+    }
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 50
