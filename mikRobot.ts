@@ -99,8 +99,8 @@ namespace mikRobot {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         return val;
-    }
-
+    }	
+	
     function initPCA9685(): void {
         i2cwrite(PCA9685_ADDRESS, MODE1, 0x00)
         setFreq(FREQUENCY);
@@ -112,14 +112,23 @@ namespace mikRobot {
     }
 	
     function initGyro(): void {
-        i2cwrite(GYRO_ADDRESS, 0x6B, 0x02, 0x03, 0x01)  // RA_PWR_MGMT_1: PWR1_CLKSET_BIT = MPU6050_CLOCK_PLL_XGYRO
+    	// 76543210 bit numbers
+        let oldreg = i2cread(GYRO_ADDRESS, 0x6B); // RA_PWR_MGMT_1
+        let newreg = (oldreg & 0xB8) | 0x01; //  PWR1_CLKSET_BIT (bits 210) = MPU6050_CLOCK_PLL_XGYRO (001)
+	    // PWR1_SLEEP_BIT (bit 6) = disabled (0)
+        i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
 	basic.pause(2);
-	i2cwrite(GYRO_ADDRESS, 0x1B, 0x04, 0x02, 0x00)  // RA_GYRO_CONFIG: GCONFIG_FS_SEL_BIT = MPU6050_GYRO_FS_250
-	basic.pause(2);	    
-	i2cwrite(GYRO_ADDRESS, 0x1C, 0x04, 0x02, 0x00)  // RA_ACCEL_CONFIG: ACONFIG_AFS_SEL_BIT = MPU6050_ACCEL_FS_2
+
+	oldreg = i2cread(GYRO_ADDRESS, 0x1B); // RA_GYRO_CONFIG
+        newreg = (oldreg & 0xE7) | 0x00; //  GCONFIG_FS_SEL_BIT (bits 43) = MPU6050_GYRO_FS_250 (00)
+        i2cwrite(GYRO_ADDRESS, 0x1B, newreg);		         
 	basic.pause(2);
-	i2cwrite(GYRO_ADDRESS, 0x6B, 0x06, 0x00)  // RA_PWR_MGMT_1: PWR1_SLEEP_BIT = disabled
-	basic.pause(2);	 	    
+	    
+	oldreg = i2cread(GYRO_ADDRESS, 0x1C); // RA_ACCEL_CONFIG
+        newreg = (oldreg & 0xE7) | 0x00; //  ACONFIG_AFS_SEL_BIT (bits 43) = MPU6050_ACCEL_FS_2 (00)
+        i2cwrite(GYRO_ADDRESS, 0x1C, newreg);		         
+	basic.pause(2);
+ 	    
         gyro_init = true
     }	
 
@@ -180,23 +189,39 @@ namespace mikRobot {
 	    setPwm(9, 0, pos)
         }
     }
-    //% blockId=mikRobot_gyro_reset block="Gyro reset"
+	
+    //% blockId=mikRobot_GyroReset block="GyroReset"
     //% weight=18 advanced=true	
     export function Gyro_Reset(): void {
         if (!gyro_init) {
             initGyro()
         }
-	i2cwrite(GYRO_ADDRESS, 0x02, 0x06, 0x06, 0x00)  // set Z gyro offset = 0 MPU650_RA_ZG_OFFS_TC
-	basic.pause(2);		
+        let oldreg = i2cread(GYRO_ADDRESS, 0x02); // MPU6050_RA_ZG_OFFS_TC
+        let newreg = (oldreg & 0x81) | 0x00; // set Z gyro offset = 0 [7]PWR_Mode [6:1]ZG_OFFS_TC [0]OTP_BNK_VLD
+        i2cwrite(GYRO_ADDRESS, 0x02, newreg);		         
+	basic.pause(2);	
     }
 	
-    //% blockId=mikRobot_gyro block="Gyro"
+    //% blockId=mikRobot_Gyro block="Gyro"
     //% weight=17
     export function Gyro(): number { 
 	let z = 0;
-
-	    
-	return z;
+ 
+        pins.i2cWriteNumber(GYRO_ADDRESS, 0x47, NumberFormat.UInt8BE);  // GYRO_ZOUT_H
+        let high = pins.i2cReadNumber(GYRO_ADDRESS, NumberFormat.UInt8BE);
+        basic.pause(2);
+        pins.i2cWriteNumber(GYRO_ADDRESS, 0x48, NumberFormat.UInt8BE);  // GYRO_ZOUT_L
+        let low = pins.i2cReadNumber(GYRO_ADDRESS, NumberFormat.UInt8BE);
+        basic.pause(2);    
+   
+          //mpu.resetFIFO();
+	  // 76543210 bit numbers
+          let oldreg = i2cread(GYRO_ADDRESS, 0x6A); // RA_USER_CTRL
+          let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
+          i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
+	  basic.pause(2);
+  
+	return (high*256+low);
     }	
 	
     //% blockId=mikRobot_ultrasonic block="Ultrasonic"
