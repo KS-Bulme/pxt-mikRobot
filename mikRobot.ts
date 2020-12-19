@@ -218,7 +218,7 @@ namespace mikRobot {
         i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
 	control.waitMicros(2);
 	    
-	z = (high<<1) * 128 + low)
+	z = (high<<1) * 128 + low
 	if (high>>7) {
 	    return (-1)*z;
 	} else {
