@@ -203,7 +203,7 @@ namespace mikRobot {
     }
 	
     //% blockId=mikRobot_Gyro block="Gyro"
-    //% weight=17
+    //% weight=17 advanced=true
     export function Gyro(): number { 
 	let z = 0;
  
