@@ -224,29 +224,6 @@ namespace mikRobot {
 	return (high*256+low);
     }	
 	
-    //% blockId=mikRobot_ultrasonic block="Ultrasonic"
-    //% weight=80
-    export function Ultrasonic(): number {
-	// send pulse
-	pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
-	pins.digitalWritePin(DigitalPin.P1, 0);
-	control.waitMicros(2);
-	pins.digitalWritePin(DigitalPin.P1, 1);
-	control.waitMicros(10);
-	pins.digitalWritePin(DigitalPin.P1, 0);
-
-	// read pulse, timeout 30000us
-	let d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
-
-	if (d == 0) {
-		// wrong sensor value or timeout -> result hardcoded to 100cm
-		return 100;
-	} else {
-		// hand-measured factor (instead of 58)
-		return d / 37;
-	}
-    }
-	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 50
     //% weight=82
