@@ -117,17 +117,17 @@ namespace mikRobot {
         let newreg = (oldreg & 0xB8) | 0x01; //  PWR1_CLKSET_BIT (bits 210) = MPU6050_CLOCK_PLL_XGYRO (001)
 	    // PWR1_SLEEP_BIT (bit 6) = disabled (0)
         i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
-	basic.pause(2);
+	control.waitMicros(2);
 
 	oldreg = i2cread(GYRO_ADDRESS, 0x1B); // RA_GYRO_CONFIG
         newreg = (oldreg & 0xE7) | 0x00; //  GCONFIG_FS_SEL_BIT (bits 43) = MPU6050_GYRO_FS_250 (00)
         i2cwrite(GYRO_ADDRESS, 0x1B, newreg);		         
-	basic.pause(2);
+	control.waitMicros(2);
 	    
 	oldreg = i2cread(GYRO_ADDRESS, 0x1C); // RA_ACCEL_CONFIG
         newreg = (oldreg & 0xE7) | 0x00; //  ACONFIG_AFS_SEL_BIT (bits 43) = MPU6050_ACCEL_FS_2 (00)
         i2cwrite(GYRO_ADDRESS, 0x1C, newreg);		         
-	basic.pause(2);
+	control.waitMicros(2);
  	    
         gyro_init = true
     }	
@@ -199,7 +199,7 @@ namespace mikRobot {
         let oldreg = i2cread(GYRO_ADDRESS, 0x02); // MPU6050_RA_ZG_OFFS_TC
         let newreg = (oldreg & 0x81) | 0x00; // set Z gyro offset = 0 [7]PWR_Mode [6:1]ZG_OFFS_TC [0]OTP_BNK_VLD
         i2cwrite(GYRO_ADDRESS, 0x02, newreg);		         
-	basic.pause(2);	
+	control.waitMicros(2);
     }
 	
     //% blockId=mikRobot_Gyro block="Gyro"
@@ -207,18 +207,18 @@ namespace mikRobot {
     export function Gyro(): number { 
 	let z = 0;
         let high = i2cread(GYRO_ADDRESS, 0x47); // GYRO_ZOUT_H
-        basic.pause(2);
+        control.waitMicros(2);
         let low = i2cread(GYRO_ADDRESS, 0x48); // GYRO_ZOUT_L
-        basic.pause(2);    
+        control.waitMicros(2);   
    
           //mpu.resetFIFO();
 	  // 76543210 bit numbers
           let oldreg = i2cread(GYRO_ADDRESS, 0x6A); // RA_USER_CTRL
           let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
           i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
-	  basic.pause(2);
+	  control.waitMicros(2);
   
-	return high*256+low;
+	return (high * 256 + low);
     }	
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
