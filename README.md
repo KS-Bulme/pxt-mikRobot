@@ -1,7 +1,8 @@
 # mikRobot
 
 Erweiterung für den Roboter mik:robot von S. Kummer / Extension for mik:robot by S. Kummer
-www.mikrobot.at
+
+Beispiele und Dokumentationen unter www.mikrobot.at / For code examples and documentation see www.mikrobot.at
 
 ## License
 
@@ -10,7 +11,6 @@ MIT
 ## Supported targets
 
 * for PXT/micro:bit
-(The metadata is needed for package search.)
 
 ```package
 mikRobot=github.com/KS-Bulme/pxt-mikRobot
