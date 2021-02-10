@@ -10,7 +10,9 @@ basic.forever(function () {
     while (!(mikRobot.Infrared(Sensor.Left) && mikRobot.Infrared(Sensor.Right))) {
         mikRobot.Run(Dir.forward, 80)
     }
-    mikRobot.Run(Dir.backward, 50)
+    // move backwards with speed 50 for 2 sec...
+    mikRobot.RunDelay(Dir.backward, 50, 2)
+    // ... then turn left with speed 50 for a random number of time between 0.1 and 1 sec
     mikRobot.RunDelay(Dir.turnLeft, 50, randint(0, 10) / 10)
 })
 ```
