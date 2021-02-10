@@ -16,17 +16,17 @@ basic.forever(function () {
     mikRobot.RunDelay(Dir.turnLeft, 50, randint(0, 10) / 10)
 })
 ```
-## Beispiel 2: Folge der Linie! / Example 2: follow the line!
+## Beispiel 2: Folge einfach der Linie! / Example 2: simply follow the line!
 ```
 let sensor: number[] = []
 basic.forever(function () {
     sensor = mikRobot.AnalogRead()
     if (sensor[2] < 100) {
-        // middle sensor detects black line, steer right
+        // sensor#2 detects black line, steer right
         mikRobot.MotorRun(Motors.Left, 50)
         mikRobot.MotorRun(Motors.Right, 20)
     } else {
-        // we're right off the line, steer left
+        // we're off the line to the right, steer left
         mikRobot.MotorRun(Motors.Left, 20)
         mikRobot.MotorRun(Motors.Right, 50)
     }
