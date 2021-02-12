@@ -237,7 +237,7 @@ namespace mikRobot {
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 50
-    //% weight=82
+    //% weight=87
     //% speed.min=-255 speed.max=255 eg: 50
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function MotorRun(index: Motors, speed: number): void {
@@ -466,6 +466,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_ReadSensorMin block="ReadSensorMin"
+    //% group="Line sensor"	
     //% weight=50 advanced=true
     export function ReadSensorMin(): number[] {
         return calibratedMin;
