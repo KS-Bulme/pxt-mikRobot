@@ -23,7 +23,7 @@
 	"mikRobot.ReadSensorMax|block": "Max. Linien-Sensor Werte",
 	"mikRobot.ReadSensorMin|block": "Min. Linien-Sensor Werte",
 	"mikRobot.Infrared2|block": "Hindernis2 |%index|Grenze %limit",
-	"Line sensor": "Linien-Sensor",
-	"Gyro sensor": "Kreisel-Sensor",
-	"Ultrasonic sensor": "Ultraschall-Sensor"
+	"Line sensor|group": "Linien-Sensor",
+	"Gyro sensor|group": "Kreisel-Sensor",
+	"Ultrasonic sensor|group": "Ultraschall-Sensor"
 }
