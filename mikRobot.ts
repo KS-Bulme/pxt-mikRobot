@@ -41,7 +41,7 @@ enum Dir {
  * Benutzerdefinierter Grafikblock
  */
 //% weight=5 color=#0fbc11 icon="\uf113"
-//% groups=['Ultrasonic sensor', 'Line sensor', 'Gyro sensor']
+//% groups=['Ultraschall-Sensor', 'Linien-Sensor', 'Gyro-Sensor']
 namespace mikRobot {
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
