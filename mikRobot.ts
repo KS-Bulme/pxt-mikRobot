@@ -487,7 +487,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_ReadSensorMin block="ReadSensorMin"
-    //% group="Line sensor"	
+    //% group="Linien-Sensor"	
     //% weight=50 advanced=true
     export function ReadSensorMin(): number[] {
         return calibratedMin;
