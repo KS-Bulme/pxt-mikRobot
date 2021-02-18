@@ -545,7 +545,7 @@ namespace mikRobot {
     //% weight=60 advanced=true
     //% limit.min=0 limit.max=10
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4	
-    export function Infrared2(index: Sensor, limit: number): boolean {
+    export function Infrared2(index: Sensor, limit: number): number {
         if (!initialized) {
             initPCA9685()
         }
@@ -584,12 +584,12 @@ namespace mikRobot {
         }
 
         if (index == 0x01) {
-            if (sensor_values[5] < (limit*95+50)) {  // 0 .. 1023 (useful range ~50 to 1000)
-                value = false;
+            // if (sensor_values[5] < (limit*95+50)) {  // 0 .. 1023 (useful range ~50 to 1000)
+                value = sensor_values[5];
             }
         } else {
-            if (sensor_values[6] < (limit*95+50)) {
-                value = false;
+            //if (sensor_values[6] < (limit*95+50)) {
+                value = sensor_values[6];
             }
         }
         return value;
