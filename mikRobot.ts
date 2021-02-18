@@ -100,7 +100,7 @@ namespace mikRobot {
 	
     function initGyro(): void {
     	// 76543210 bit numbers
-        
+        /*
 		i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x00); // Clear sleep mode bit (6), enable all sensors
 		// Delay 100 ms for PLL to get established on x-axis gyro; should check for PLL ready interrupt
 		control.waitMicros(100000);
@@ -135,6 +135,8 @@ namespace mikRobot {
 		control.waitMicros(2);		
 		i2cwrite(GYRO_ADDRESS, INT_ENABLE, 0x01);  // Enable data ready (bit 0) interrupt
 		control.waitMicros(2);
+		
+		*/
  	    
         gyro_init = true
     }	
@@ -206,7 +208,7 @@ namespace mikRobot {
         let oldreg = i2cread(GYRO_ADDRESS, 0x02); // MPU6050_RA_ZG_OFFS_TC
         let newreg = (oldreg & 0x81) | 0x00; // set Z gyro offset = 0 [7]PWR_Mode [6:1]ZG_OFFS_TC [0]OTP_BNK_VLD
         i2cwrite(GYRO_ADDRESS, 0x02, newreg);		         
-		control.waitMicros(2);
+	control.waitMicros(2);
     }
 	
     //% blockId=mikRobot_Gyro block="Gyro"
