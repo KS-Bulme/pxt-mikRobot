@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "Extension for mikRobot",
     "license": "MIT",
-    "icon": "./icon.png"
+    "icon": "./icon.png",
     "dependencies": {
         "core": "*"
     },
