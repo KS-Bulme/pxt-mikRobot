@@ -323,24 +323,6 @@ namespace mikRobot {
         Run(Dir.stop, 0);
     }
 
-    //% blockId=mikRobot_infrared block="Infrared |%index"
-    //% weight=85
-    export function Infrared(index: Sensor): boolean {
-        let value = true;
-        pins.setPull(DigitalPin.P12, PinPullMode.PullUp);
-        pins.setPull(DigitalPin.P16, PinPullMode.PullUp);
-        if (index == 0x01) {
-            if (pins.digitalReadPin(DigitalPin.P12)) {
-                value = false;
-            }
-        } else {
-            if (pins.digitalReadPin(DigitalPin.P16)) {
-                value = false;
-            }
-        }
-        return value;
-    }
-
     //% blockId=mikRobot_ultrasonic block="Ultrasonic"
     //% group="Ultrasonic sensor"	
     //% weight=80
@@ -539,24 +521,23 @@ namespace mikRobot {
 
         return last_value;
     }
-	
-    //% blockId=mikRobot_infrared2 block="Infrared2 |%index|"
-    //% weight=60 advanced=true
-    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4	
-    export function Infrared2(index: Sensor): number {
+		
+    //% blockId=mikRobot_infrared block="Infrared |%index|"
+    //% weight=85	
+    export function Infrared(index: Sensor): boolean {
         if (!initialized) {
             initPCA9685()
         }
         let i = 0;
         let j = 0;
-        let channel = 0;
-        let value = 0;
-        let values = [0, 0, 0, 0, 0, 0, 0, 0];
-        let sensor_values = [0, 0, 0, 0, 0, 0, 0];
+        // let channel = 0;
+        let value = true;
+        let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let sensor_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         //pins.digitalWritePin(DigitalPin.P16, 0);
         setPwm(0, 0, 0);
         basic.pause(2);
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 12; i++) {
             for (j = 0; j < 10; j++) {
                 //0 to 4 clock transfer channel address
                 if (j < 4) {
@@ -577,17 +558,32 @@ namespace mikRobot {
         }
         //pins.digitalWritePin(DigitalPin.P16, 1);
         setPwm(0, 0, 4095);
-        for (i = 0; i < 7; i++) {
+        for (i = 0; i < 12; i++) {
             sensor_values[i] = values[i + 1];
         }
-
-        if (index == 0x01) {
-            // if (sensor_values[5] < (limit*95+50)) {  // 0 .. 1023 (useful range ~50 to 1000)
-                value = sensor_values[5];
-        } else {
-            //if (sensor_values[6] < (limit*95+50)) {
-                value = sensor_values[6];
-        }
+	if (sensor_values[10] > 400) { // mik:robot v2 A10=5V (range ~770)
+		if (index == 0x01) {
+		    if (sensor_values[5] > 400) {  // A5 = 0 .. 1023 (low=40, high=770)
+			value = false;
+		    }
+		} else {
+		    if (sensor_values[6] > 400) {  // A6 (DSR)
+			value = false;
+		    }
+		}
+	} else { // mik:robot v1
+		pins.setPull(DigitalPin.P12, PinPullMode.PullUp);
+		pins.setPull(DigitalPin.P16, PinPullMode.PullUp);
+		if (index == 0x01) {
+		    if (pins.digitalReadPin(DigitalPin.P12)) {
+			value = false;
+		    }
+		} else {
+		    if (pins.digitalReadPin(DigitalPin.P16)) {
+			value = false;
+		    }
+		}
+	}		
         return value;
     }
 }   
