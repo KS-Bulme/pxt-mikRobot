@@ -179,23 +179,62 @@ namespace mikRobot {
         if (!initialized) {
             initPCA9685()
         }
-	if (pos > 180) {
-            pos = 180
+        let i = 0;
+        let j = 0;
+        let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        //pins.digitalWritePin(DigitalPin.P16, 0);
+        setPwm(0, 0, 0);
+        basic.pause(2);
+        for (i = 0; i < 12; i++) {
+            for (j = 0; j < 10; j++) {
+                //0 to 4 clock transfer channel address
+                if (j < 4) {
+                    if ((i >> (3 - j)) & 0x01) {
+                        pins.digitalWritePin(DigitalPin.P15, 1);
+                    } else {
+                        pins.digitalWritePin(DigitalPin.P15, 0);
+                    }
+                }
+                //0 to 10 clock receives the previous conversion result
+                values[i] <<= 1;
+                if (pins.digitalReadPin(DigitalPin.P14)) {
+                    values[i] |= 0x01;
+                }
+                pins.digitalWritePin(DigitalPin.P13, 1);
+                pins.digitalWritePin(DigitalPin.P13, 0);
+            }
         }
-        if (pos < 0) {
-            pos = 0
-        }
+        //pins.digitalWritePin(DigitalPin.P16, 1);
+        setPwm(0, 0, 4095);
+	if (values[11] > 400) { // mik:robot v2 A10=5V (range ~770)
+		if (pos > 180) {
+		    pos = 180
+		}
+		if (pos < 0) {
+		    pos = 0
+		}
+		if (index == 1) {
+			pins.A12.analogSetPeriod(20000);
+		    	pins.A12.setServoValue(pos);
+		} else if (index == 2) {
+			pins.A16.analogSetPeriod(20000);
+		    	pins.A16.setServoValue(pos);
+		}		
+		
 	    
-	// map 180 to 4096 (http://wiki.sunfounder.cc/index.php?title=PCA9685_16_Channel_12_Bit_PWM_Servo_Driver)
-	pos = MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0;
-	// pos = DEFAULT_PULSE_WIDTH;
-	// pos = (MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0)/ 1000000 * FREQUENCY * 4096;
-        
-        if (index == 1) {
-            setPwm(8, 0, pos)
-        } else if (index == 2) {
-	    setPwm(9, 0, pos)
-        }
+		/*  old code for PCA9685
+		// map 180 to 4096 (http://wiki.sunfounder.cc/index.php?title=PCA9685_16_Channel_12_Bit_PWM_Servo_Driver)
+		pos = MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0;
+		// pos = DEFAULT_PULSE_WIDTH;
+		// pos = (MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0)/ 1000000 * FREQUENCY * 4096;
+
+		if (index == 1) {
+		    setPwm(8, 0, pos)
+		} else if (index == 2) {
+		    setPwm(9, 0, pos)
+		}
+		*/
+	}
     }
 	
     //% blockId=mikRobot_GyroReset block="GyroReset"
