@@ -43,25 +43,38 @@ enum Dir {
 //% weight=5 color=#0fbc11 icon="\uf113"
 namespace mikRobot {
     const PCA9685_ADDRESS = 0x40
+    const GYRO_ADDRESS = 0x68
     const MODE1 = 0x00
+    const MODE2 = 0x01
+    const SUBADR1 = 0x02
+    const SUBADR2 = 0x03
+    const SUBADR3 = 0x04
     const PRESCALE = 0xFE // register for prescaler
     const LED0_ON_L = 0x06
+    const LED0_ON_H = 0x07
+    const LED0_OFF_L = 0x08
+    const LED0_OFF_H = 0x09
+    const ALL_LED_ON_L = 0xFA
+    const ALL_LED_ON_H = 0xFB
+    const ALL_LED_OFF_L = 0xFC
+    const ALL_LED_OFF_H = 0xFD
     const MIN_PULSE_WIDTH = 205
     const MAX_PULSE_WIDTH = 409
     const DEFAULT_PULSE_WIDTH = 307
 //    const FREQUENCY = 50 // 50Hz for servo PWM
     const FREQUENCY = 500
-	
-    const GYRO_ADDRESS = 0x68
-	const GSCALE = 0x00 // GCONFIG_FS_SEL_BIT (bits 43) = MPU6050_GYRO_FS_250 (00)
-	const ASCALE = 0x00 // ACONFIG_AFS_SEL_BIT (bits 43) = MPU6050_ACCEL_FS_2 (00)
-	const SMPLRT_DIV = 0x19
-	const CONFIG = 0x1A
-	const GYRO_CONFIG = 0x1B
-	const ACCEL_CONFIG = 0x1C
-	const INT_PIN_CFG = 0x37
-	const INT_ENABLE = 0x38
-	const PWR_MGMT_1 = 0x6B // Device defaults to SLEEP mode	
+
+    const STP_CHA_L = 2047
+    const STP_CHA_H = 4095
+
+    const STP_CHB_L = 1
+    const STP_CHB_H = 2047
+
+    const STP_CHC_L = 1023
+    const STP_CHC_H = 3071
+
+    const STP_CHD_L = 3071
+    const STP_CHD_H = 1023
 
     let initialized = false
     let gyro_init = false
@@ -100,43 +113,21 @@ namespace mikRobot {
 	
     function initGyro(): void {
     	// 76543210 bit numbers
-        /*
-		i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x00); // Clear sleep mode bit (6), enable all sensors
-		// Delay 100 ms for PLL to get established on x-axis gyro; should check for PLL ready interrupt
-		control.waitMicros(100000);
-		i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x01);  // Set clock source to be PLL with x-axis gyroscope reference, bits 2:0 = 001
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, CONFIG, 0x03);  // Configure Gyro and Accelerometer
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, SMPLRT_DIV, 0x04); // Use a 200 Hz rate; the same rate set in CONFIG above
-		control.waitMicros(2);
-		
-		// Range selects FS_SEL and AFS_SEL are 0 - 3, so 2-bit values are left-shifted into positions 4:3
-		let oldreg = i2cread(GYRO_ADDRESS, GYRO_CONFIG);
-		i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5]
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0x18); // Clear FS bits [4:3]
-		control.waitMicros(2);		
-		i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg | GSCALE << 3); // Set full scale range for the gyro
-		control.waitMicros(2);		
-   
-		oldreg =  i2cread(GYRO_ADDRESS, ACCEL_CONFIG);
-		i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5] 
-		control.waitMicros(2);		
-		i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0x18); // Clear AFS bits [4:3]
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg | ASCALE << 3); // Set full scale range for the accelerometer
-		control.waitMicros(2);		
- 
-		// Configure Interrupts and Bypass Enable
-		// Set interrupt pin active high, push-pull, and clear on read of INT_STATUS, enable I2C_BYPASS_EN so additional chips 
-		// can join the I2C bus and all can be controlled by the microbit as master
-		i2cwrite(GYRO_ADDRESS, INT_PIN_CFG, 0x22);
-		control.waitMicros(2);		
-		i2cwrite(GYRO_ADDRESS, INT_ENABLE, 0x01);  // Enable data ready (bit 0) interrupt
-		control.waitMicros(2);
-		
-		*/
+        let oldreg = i2cread(GYRO_ADDRESS, 0x6B); // RA_PWR_MGMT_1
+        let newreg = (oldreg & 0xB8) | 0x01; //  PWR1_CLKSET_BIT (bits 210) = MPU6050_CLOCK_PLL_XGYRO (001)
+	    // PWR1_SLEEP_BIT (bit 6) = disabled (0)
+        i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
+	control.waitMicros(2);
+
+	oldreg = i2cread(GYRO_ADDRESS, 0x1B); // RA_GYRO_CONFIG
+        newreg = (oldreg & 0xE7) | 0x00; //  GCONFIG_FS_SEL_BIT (bits 43) = MPU6050_GYRO_FS_250 (00)
+        i2cwrite(GYRO_ADDRESS, 0x1B, newreg);		         
+	control.waitMicros(2);
+	    
+	oldreg = i2cread(GYRO_ADDRESS, 0x1C); // RA_ACCEL_CONFIG
+        newreg = (oldreg & 0xE7) | 0x00; //  ACONFIG_AFS_SEL_BIT (bits 43) = MPU6050_ACCEL_FS_2 (00)
+        i2cwrite(GYRO_ADDRESS, 0x1C, newreg);		         
+	control.waitMicros(2);
  	    
         gyro_init = true
     }	
@@ -220,18 +211,14 @@ namespace mikRobot {
         let low = i2cread(GYRO_ADDRESS, 0x48); // GYRO_ZOUT_L
         control.waitMicros(2);   
    
-        //mpu.resetFIFO();
-	// 76543210 bit numbers
-        let oldreg = i2cread(GYRO_ADDRESS, 0x6A); // RA_USER_CTRL
-        let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
-        i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
-	//control.waitMicros(2);
-	
-	z = high * 256 + low
-	if (high & 0x80) {
-	    z -= 65536;
-	}
-	return z;
+          //mpu.resetFIFO();
+	  // 76543210 bit numbers
+          let oldreg = i2cread(GYRO_ADDRESS, 0x6A); // RA_USER_CTRL
+          let newreg = (oldreg & 0xFB) | 0x04; //  USERCTRL_FIFO_RESET_BIT (bit 2) = true (1)
+          i2cwrite(GYRO_ADDRESS, 0x6B, newreg);		         
+	  control.waitMicros(2);
+  
+	return (high * 256 + low);
     }	
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
@@ -413,14 +400,14 @@ namespace mikRobot {
         let max_sensor_values = [0, 0, 0, 0, 0];
         let min_sensor_values = [0, 0, 0, 0, 0];
 
-        for (let i = 0; i < 5; i++)
+        for (let i = 0; i < 5; i++)  // make the calibration take about 10 seconds
         {
             calibratedMax[i] = 0;
             calibratedMin[i] = 1023;
         }
 
 
-        for (let i = 0; i < 100; i++)  // calibration will take approx. 10 seconds
+        for (let i = 0; i < 100; i++)  // make the calibration take about 10 seconds
         {
             if (i < 25 || i >= 75) {
                 Run(Dir.turnLeft, 70)
@@ -433,11 +420,11 @@ namespace mikRobot {
             for (j = 0; j < 10; j++) {
                 let sensor_values = AnalogRead();
                 for (k = 0; k < 5; k++) {
-                    // set the max we found this time
+                    // set the max we found THIS time
                     if ((j == 0) || (max_sensor_values[k] < sensor_values[k]))
                         max_sensor_values[k] = sensor_values[k];
 
-                    // set the min we found this time
+                    // set the min we found THIS time
                     if ((j == 0) || (min_sensor_values[k] > sensor_values[k]))
                         min_sensor_values[k] = sensor_values[k];
                 }
@@ -466,8 +453,11 @@ namespace mikRobot {
         return calibratedMin;
     }
 
-    // Returns calibrated values between 0 and 1000
-	// Calibration values are stored separately for each sensor
+    // Returns values calibrated to a value between 0 and 1000, where
+    // 0 corresponds to the minimum value read by calibrate() and 1000
+    // corresponds to the maximum value.  Calibration values are
+    // stored separately for each sensor, so that differences in the
+    // sensors are accounted for automatically.
     //% blockId=mikRobot_ReadCalibrated block="ReadCalibrated"
     //% weight=80 advanced=true
     export function readCalibrated(): number[] {
