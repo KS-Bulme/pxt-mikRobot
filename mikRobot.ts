@@ -586,11 +586,9 @@ namespace mikRobot {
         if (index == 0x01) {
             // if (sensor_values[5] < (limit*95+50)) {  // 0 .. 1023 (useful range ~50 to 1000)
                 value = sensor_values[5];
-            }
         } else {
             //if (sensor_values[6] < (limit*95+50)) {
                 value = sensor_values[6];
-            }
         }
         return value;
     }
