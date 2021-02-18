@@ -1,5 +1,5 @@
 /**
- * Verwenden Sie diese Datei, um benutzerdefinierte Funktionen und Grafikblöcke zu definieren.
+ * Verwenden Sie diese Datei, um benutzerdefinierte Funktionen und GrafikblÃ¶cke zu definieren.
  * Weitere Informationen finden Sie unter https://makecode.microbit.org/blocks/custom
  */
 
@@ -41,7 +41,6 @@ enum Dir {
  * Benutzerdefinierter Grafikblock
  */
 //% weight=5 color=#0fbc11 icon="\uf113"
-//% groups=['Ultrasonic sensor', 'Line sensor', 'Gyro sensor']
 namespace mikRobot {
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -199,7 +198,6 @@ namespace mikRobot {
     }
 	
     //% blockId=mikRobot_GyroReset block="GyroReset"
-    //% group="Gyro sensor"	
     //% weight=18 advanced=true	
     export function GyroReset(): void {
         if (!gyro_init) {
@@ -212,7 +210,6 @@ namespace mikRobot {
     }
 	
     //% blockId=mikRobot_Gyro block="Gyro"
-    //% group="Gyro sensor"	
     //% weight=17 advanced=true
     export function Gyro(): number { 
 	let z = 0;
@@ -237,7 +234,7 @@ namespace mikRobot {
 	
     //% blockId=mikRobot_motor_run block="Motor|%index|speed %speed"
     //% speed eg: 50
-    //% weight=87
+    //% weight=82
     //% speed.min=-255 speed.max=255 eg: 50
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function MotorRun(index: Motors, speed: number): void {
@@ -324,7 +321,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_infrared block="Infrared |%index"
-    //% weight=85
+    //% weight=65
     export function Infrared(index: Sensor): boolean {
         let value = true;
         pins.setPull(DigitalPin.P12, PinPullMode.PullUp);
@@ -342,7 +339,6 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_ultrasonic block="Ultrasonic"
-    //% group="Ultrasonic sensor"	
     //% weight=80
     export function Ultrasonic(): number {
 	// send pulse
@@ -366,7 +362,6 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_AnalogRead block="AnalogRead"
-    //% group="Line sensor"	
     //% weight=70
     export function AnalogRead(): number[] {
         if (!initialized) {
@@ -408,7 +403,6 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_SensorCalibrated block="SensorCalibrated"
-    //% group="Line sensor"	
     //% weight=90 advanced=true
     export function SensorCalibrated(): void {
         let i = 0;
@@ -459,14 +453,12 @@ namespace mikRobot {
         Run(Dir.stop, 0);
     }
     //% blockId=mikRobot_ReadSensorMax block="ReadSensorMax"
-    //% group="Line sensor"	
     //% weight=60 advanced=true
     export function ReadSensorMax(): number[] {
         return calibratedMax;
     }
 
     //% blockId=mikRobot_ReadSensorMin block="ReadSensorMin"
-    //% group="Line sensor"	
     //% weight=50 advanced=true
     export function ReadSensorMin(): number[] {
         return calibratedMin;
@@ -475,7 +467,6 @@ namespace mikRobot {
     // Returns calibrated values between 0 and 1000
 	// Calibration values are stored separately for each sensor
     //% blockId=mikRobot_ReadCalibrated block="ReadCalibrated"
-    //% group="Line sensor"	
     //% weight=80 advanced=true
     export function readCalibrated(): number[] {
         // read the needed values
@@ -494,7 +485,6 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_readLine block="ReadLine"
-    //% group="Line sensor"	
     //% weight=20
     export function readLine(): number {
 
@@ -545,7 +535,7 @@ namespace mikRobot {
     //% weight=60 advanced=true
     //% limit.min=0 limit.max=10
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4	
-    export function Infrared2(index: Sensor, limit: number): number {
+    export function Infrared2(index: Sensor, limit: number): boolean {
         if (!initialized) {
             initPCA9685()
         }
@@ -584,11 +574,13 @@ namespace mikRobot {
         }
 
         if (index == 0x01) {
-            // if (sensor_values[5] < (limit*95+50)) {  // 0 .. 1023 (useful range ~50 to 1000)
-                value = sensor_values[5];
+            if (sensor_values[5] < (limit*95+50)) {  // 0 .. 1023 (useful range ~50 to 1000)
+                value = false;
+            }
         } else {
-            //if (sensor_values[6] < (limit*95+50)) {
-                value = sensor_values[6];
+            if (sensor_values[6] < (limit*95+50)) {
+                value = false;
+            }
         }
         return value;
     }
