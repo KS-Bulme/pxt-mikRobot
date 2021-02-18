@@ -54,15 +54,15 @@ namespace mikRobot {
     const FREQUENCY = 500
 	
     const GYRO_ADDRESS = 0x68
-	const GSCALE = 0x00 // GCONFIG_FS_SEL_BIT (bits 43) = MPU6050_GYRO_FS_250 (00)
-	const ASCALE = 0x00 // ACONFIG_AFS_SEL_BIT (bits 43) = MPU6050_ACCEL_FS_2 (00)
-	const SMPLRT_DIV = 0x19
-	const CONFIG = 0x1A
-	const GYRO_CONFIG = 0x1B
-	const ACCEL_CONFIG = 0x1C
-	const INT_PIN_CFG = 0x37
-	const INT_ENABLE = 0x38
-	const PWR_MGMT_1 = 0x6B // Device defaults to SLEEP mode	
+    const GSCALE = 0x00 // GCONFIG_FS_SEL_BIT (bits 43) = MPU6050_GYRO_FS_250 (00)
+    const ASCALE = 0x00 // ACONFIG_AFS_SEL_BIT (bits 43) = MPU6050_ACCEL_FS_2 (00)
+    const SMPLRT_DIV = 0x19
+    const CONFIG = 0x1A
+    const GYRO_CONFIG = 0x1B
+    const ACCEL_CONFIG = 0x1C
+    const INT_PIN_CFG = 0x37
+    const INT_ENABLE = 0x38
+    const PWR_MGMT_1 = 0x6B // Device defaults to SLEEP mode	
 
     let initialized = false
     let gyro_init = false
@@ -102,40 +102,40 @@ namespace mikRobot {
     function initGyro(): void {
     	// 76543210 bit numbers
         
-		i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x00); // Clear sleep mode bit (6), enable all sensors
-		// Delay 100 ms for PLL to get established on x-axis gyro; should check for PLL ready interrupt
-		control.waitMicros(100000);
-		i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x01);  // Set clock source to be PLL with x-axis gyroscope reference, bits 2:0 = 001
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, CONFIG, 0x03);  // Configure Gyro and Accelerometer
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, SMPLRT_DIV, 0x04); // Use a 200 Hz rate; the same rate set in CONFIG above
-		control.waitMicros(2);
-		
-		// Range selects FS_SEL and AFS_SEL are 0 - 3, so 2-bit values are left-shifted into positions 4:3
-		let oldreg = i2cread(GYRO_ADDRESS, GYRO_CONFIG);
-		i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5]
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0x18); // Clear FS bits [4:3]
-		control.waitMicros(2);		
-		i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg | GSCALE << 3); // Set full scale range for the gyro
-		control.waitMicros(2);		
-   
-		oldreg =  i2cread(GYRO_ADDRESS, ACCEL_CONFIG);
-		i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5] 
-		control.waitMicros(2);		
-		i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0x18); // Clear AFS bits [4:3]
-		control.waitMicros(2);
-		i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg | ASCALE << 3); // Set full scale range for the accelerometer
-		control.waitMicros(2);		
- 
-		// Configure Interrupts and Bypass Enable
-		// Set interrupt pin active high, push-pull, and clear on read of INT_STATUS, enable I2C_BYPASS_EN so additional chips 
-		// can join the I2C bus and all can be controlled by the microbit as master
-		i2cwrite(GYRO_ADDRESS, INT_PIN_CFG, 0x22);
-		control.waitMicros(2);		
-		i2cwrite(GYRO_ADDRESS, INT_ENABLE, 0x01);  // Enable data ready (bit 0) interrupt
-		control.waitMicros(2);
+	i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x00); // Clear sleep mode bit (6), enable all sensors
+	// Delay 100 ms for PLL to get established on x-axis gyro; should check for PLL ready interrupt
+	control.waitMicros(100000);
+	i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x01);  // Set clock source to be PLL with x-axis gyroscope reference, bits 2:0 = 001
+	control.waitMicros(2);
+	i2cwrite(GYRO_ADDRESS, CONFIG, 0x03);  // Configure Gyro and Accelerometer
+	control.waitMicros(2);
+	i2cwrite(GYRO_ADDRESS, SMPLRT_DIV, 0x04); // Use a 200 Hz rate; the same rate set in CONFIG above
+	control.waitMicros(2);
+
+	// Range selects FS_SEL and AFS_SEL are 0 - 3, so 2-bit values are left-shifted into positions 4:3
+	let oldreg = i2cread(GYRO_ADDRESS, GYRO_CONFIG);
+	i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5]
+	control.waitMicros(2);
+	i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0x18); // Clear FS bits [4:3]
+	control.waitMicros(2);		
+	i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg | GSCALE << 3); // Set full scale range for the gyro
+	control.waitMicros(2);		
+
+	oldreg =  i2cread(GYRO_ADDRESS, ACCEL_CONFIG);
+	i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5] 
+	control.waitMicros(2);		
+	i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0x18); // Clear AFS bits [4:3]
+	control.waitMicros(2);
+	i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg | ASCALE << 3); // Set full scale range for the accelerometer
+	control.waitMicros(2);		
+
+	// Configure Interrupts and Bypass Enable
+	// Set interrupt pin active high, push-pull, and clear on read of INT_STATUS, enable I2C_BYPASS_EN so additional chips 
+	// can join the I2C bus and all can be controlled by the microbit as master
+	i2cwrite(GYRO_ADDRESS, INT_PIN_CFG, 0x22);
+	control.waitMicros(2);		
+	i2cwrite(GYRO_ADDRESS, INT_ENABLE, 0x01);  // Enable data ready (bit 0) interrupt
+	control.waitMicros(2);
  	    
         gyro_init = true
     }	
@@ -238,7 +238,7 @@ namespace mikRobot {
     }
 	
     //% blockId=mikRobot_GyroReset block="GyroReset"
-    //% group="Gyro sensor"	
+    //% group="Gyro-Sensor"	
     //% weight=18 advanced=true	
     export function GyroReset(): void {
         if (!gyro_init) {
@@ -251,7 +251,7 @@ namespace mikRobot {
     }
 	
     //% blockId=mikRobot_Gyro block="Gyro"
-    //% group="Gyro sensor"	
+    //% group="Gyro-Sensor"	
     //% weight=17 advanced=true
     export function Gyro(): number { 
 	let z = 0;
@@ -363,7 +363,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_ultrasonic block="Ultrasonic"
-    //% group="Ultrasonic sensor"	
+    //% group="Ultraschall-Sensor"	
     //% weight=80
     export function Ultrasonic(): number {
 	// send pulse
@@ -387,7 +387,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_AnalogRead block="AnalogRead"
-    //% group="Line sensor"	
+    //% group="Linien-Sensor"	
     //% weight=70
     export function AnalogRead(): number[] {
         if (!initialized) {
@@ -429,7 +429,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_SensorCalibrated block="SensorCalibrated"
-    //% group="Line sensor"	
+    //% group="Linien-Sensor"	
     //% weight=90 advanced=true
     export function SensorCalibrated(): void {
         let i = 0;
@@ -480,7 +480,7 @@ namespace mikRobot {
         Run(Dir.stop, 0);
     }
     //% blockId=mikRobot_ReadSensorMax block="ReadSensorMax"
-    //% group="Line sensor"	
+    //% group="Linien-Sensor"	
     //% weight=60 advanced=true
     export function ReadSensorMax(): number[] {
         return calibratedMax;
@@ -496,7 +496,7 @@ namespace mikRobot {
     // Returns calibrated values between 0 and 1000
 	// Calibration values are stored separately for each sensor
     //% blockId=mikRobot_ReadCalibrated block="ReadCalibrated"
-    //% group="Line sensor"	
+    //% group="Linien-Sensor"	
     //% weight=80 advanced=true
     export function readCalibrated(): number[] {
         // read the needed values
@@ -515,7 +515,7 @@ namespace mikRobot {
     }
 
     //% blockId=mikRobot_readLine block="ReadLine"
-    //% group="Line sensor"	
+    //% group="Linien-Sensor"	
     //% weight=20
     export function readLine(): number {
 
