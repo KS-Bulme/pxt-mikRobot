@@ -215,10 +215,10 @@ namespace mikRobot {
 		}
 		if (index == 1) {
 			pins.analogSetPeriod(AnalogPin.P12, 20000);
-		    	pins.setServoValue(AnalogPin.P12, pos);
+		    	pins.servoWritePin(AnalogPin.P12, pos);
 		} else if (index == 2) {
 			pins.analogSetPeriod(AnalogPin.P16, 20000);
-		    	pins.setServoValue(AnalogPin.P16, pos);
+		    	pins.servoWritePin(AnalogPin.P16, pos);
 		}		
 		
 	    
