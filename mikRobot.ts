@@ -214,11 +214,11 @@ namespace mikRobot {
 		    pos = 0
 		}
 		if (index == 1) {
-			pins.A12.analogSetPeriod(20000);
-		    	pins.A12.setServoValue(pos);
+			pins.analogSetPeriod(AnalogPin.P12, 20000);
+		    	pins.setServoValue(AnalogPin.P12, pos);
 		} else if (index == 2) {
-			pins.A16.analogSetPeriod(20000);
-		    	pins.A16.setServoValue(pos);
+			pins.analogSetPeriod(AnalogPin.P16, 20000);
+		    	pins.setServoValue(AnalogPin.P16, pos);
 		}		
 		
 	    
