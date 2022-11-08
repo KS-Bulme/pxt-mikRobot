@@ -184,25 +184,36 @@ namespace mikRobot {
         let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         //pins.digitalWritePin(DigitalPin.P16, 0);
         setPwm(0, 0, 0);
-        basic.pause(2);
-        for (i = 0; i < 12; i++) {
+        basic.pause(1);  // setup time /CS=0 1.5us+PWM?
+        for (i = 0; i < 12; i++) {  // all 11 channels
             for (j = 0; j < 10; j++) {
-                //0 to 4 clock transfer channel address
-                if (j < 4) {
+                if (j < 4) { //0 to 3 clock transfer channel address (B3 to B0) on MOSI
                     if ((i >> (3 - j)) & 0x01) {
                         pins.digitalWritePin(DigitalPin.P15, 1);
                     } else {
                         pins.digitalWritePin(DigitalPin.P15, 0);
                     }
                 }
-                //0 to 10 clock receives the previous conversion result
+                //0 to 9 clock receives the previous conversion result on MISO
                 values[i] <<= 1;
                 if (pins.digitalReadPin(DigitalPin.P14)) {
                     values[i] |= 0x01;
                 }
+		#ifdef mbcodal  // micro:bit v2 needs a slowdown
+		    control.waitMicros(1);  // 100ns setup time for address data before clock rise
+		#endif
                 pins.digitalWritePin(DigitalPin.P13, 1);
+		#ifdef mbcodal
+		    control.waitMicros(1);  // min. 190ns clock pulse duration
+		#endif
                 pins.digitalWritePin(DigitalPin.P13, 0);
+		#ifdef mbcodal
+		    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
+		#endif		
             }
+	    #ifdef mbcodal  // micro:bit v2 needs a slowdown
+		control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
+	    #endif
         }
         //pins.digitalWritePin(DigitalPin.P16, 1);
         setPwm(0, 0, 4095);
@@ -399,27 +410,38 @@ namespace mikRobot {
         let values = [0, 0, 0, 0, 0, 0];
         let sensor_values = [0, 0, 0, 0, 0];
         //pins.digitalWritePin(DigitalPin.P16, 0);
-        setPwm(0, 0, 0);
-        basic.pause(2);
-        for (i = 0; i < 6; i++) {
+        setPwm(0, 0, 0);   
+        basic.pause(1);  // setup time /CS=0 1.5us+PWM?
+        for (i = 0; i < 6; i++) {  // only first 5 channels
             for (j = 0; j < 10; j++) {
-                //0 to 4 clock transfer channel address
-                if (j < 4) {
+                if (j < 4) { //0 to 3 clock transfer channel address (B3 to B0) on MOSI
                     if ((i >> (3 - j)) & 0x01) {
                         pins.digitalWritePin(DigitalPin.P15, 1);
                     } else {
                         pins.digitalWritePin(DigitalPin.P15, 0);
                     }
                 }
-                //0 to 10 clock receives the previous conversion result
+                //0 to 9 clock receives the previous conversion result on MISO
                 values[i] <<= 1;
                 if (pins.digitalReadPin(DigitalPin.P14)) {
                     values[i] |= 0x01;
                 }
+		#ifdef mbcodal  // micro:bit v2 needs a slowdown
+		    control.waitMicros(1);  // 100ns setup time for address data before clock rise
+		#endif
                 pins.digitalWritePin(DigitalPin.P13, 1);
+		#ifdef mbcodal
+		    control.waitMicros(1);  // min. 190ns clock pulse duration
+		#endif
                 pins.digitalWritePin(DigitalPin.P13, 0);
+		#ifdef mbcodal
+		    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
+		#endif		
             }
-        }
+	    #ifdef mbcodal  // micro:bit v2 needs a slowdown
+		control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
+	    #endif
+        }	    
         //pins.digitalWritePin(DigitalPin.P16, 1);
         setPwm(0, 0, 4095);
         for (i = 0; i < 5; i++) {
@@ -574,27 +596,39 @@ namespace mikRobot {
         let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         let sensor_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         //pins.digitalWritePin(DigitalPin.P16, 0);
-        setPwm(0, 0, 0);
-        basic.pause(2);
-        for (i = 0; i < 12; i++) {
+        setPwm(0, 0, 0); 
+        basic.pause(1);  // setup time /CS=0 1.5us+PWM?
+        for (i = 0; i < 12; i++) {  // all 11 channels
             for (j = 0; j < 10; j++) {
-                //0 to 4 clock transfer channel address
-                if (j < 4) {
+                if (j < 4) { //0 to 3 clock transfer channel address (B3 to B0) on MOSI
                     if ((i >> (3 - j)) & 0x01) {
                         pins.digitalWritePin(DigitalPin.P15, 1);
                     } else {
                         pins.digitalWritePin(DigitalPin.P15, 0);
                     }
                 }
-                //0 to 10 clock receives the previous conversion result
+                //0 to 9 clock receives the previous conversion result on MISO
                 values[i] <<= 1;
                 if (pins.digitalReadPin(DigitalPin.P14)) {
                     values[i] |= 0x01;
                 }
+		#ifdef mbcodal  // micro:bit v2 needs a slowdown
+		    control.waitMicros(1);  // 100ns setup time for address data before clock rise
+		#endif
                 pins.digitalWritePin(DigitalPin.P13, 1);
+		#ifdef mbcodal
+		    control.waitMicros(1);  // min. 190ns clock pulse duration
+		#endif
                 pins.digitalWritePin(DigitalPin.P13, 0);
+		#ifdef mbcodal
+		    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
+		#endif		
             }
-        }
+	    #ifdef mbcodal  // micro:bit v2 needs a slowdown
+		control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
+	    #endif
+	}
+	
         //pins.digitalWritePin(DigitalPin.P16, 1);
         setPwm(0, 0, 4095);
         for (i = 0; i < 12; i++) {
