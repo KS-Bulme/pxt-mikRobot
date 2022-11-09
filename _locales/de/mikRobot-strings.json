@@ -18,7 +18,7 @@
 	"mikRobot.GyroReset|block": "Kreisel zurücksetzen",
 	"mikRobot.SensorCalibrated|block": "Linien-Sensor-Kalibrierung",
 	"mikRobot.readLine|block": "Position der Linie",
-	"mikRobot.AnalogRead|block": "Linien-Sensor Werte",
+	"mikRobot.AnalogRead|block": "Linien-Sensor Werte1",
 	"mikRobot.readCalibrated|block": "Linien-Sensor kalibriert",
 	"mikRobot.ReadSensorMax|block": "Max. Linien-Sensor Werte",
 	"mikRobot.ReadSensorMin|block": "Min. Linien-Sensor Werte",
