@@ -397,7 +397,7 @@ namespace mikRobot {
 	}
     }
 
-    //% blockId=mikRobot_AnalogRead block="AnalogRead"
+    //% blockId=mikRobot_AnalogRead block="AnalogRead1"
     //% group="Linien-Sensor"	
     //% weight=70
     export function AnalogRead(): number[] {
