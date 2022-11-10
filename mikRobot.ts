@@ -1,9 +1,8 @@
-/**
- * Verwenden Sie diese Datei, um benutzerdefinierte Funktionen und Grafikblöcke zu definieren.
- * Weitere Informationen finden Sie unter https://makecode.microbit.org/blocks/custom
+/*
+ * v1.0.1 read control.hardwareVersion() and set global variable bit_v2 [number], used to slow down SPI communication on non v1.x HW
  */
 
-enum Motors {
+ enum Motors {
     //% block="Left"
     Left = 0x1,
     //% block="Right"
@@ -65,6 +64,8 @@ namespace mikRobot {
     const PWR_MGMT_1 = 0x6B // Device defaults to SLEEP mode	
 
     let initialized = false
+    let mik_v1 = false  // assume new MIKrobot v2 or higher
+    let bit_v2 = 0 // 0 if hardware is v1.x, 1 for all others
     let gyro_init = false
     let last_value = 0; // assume initially that the line is left.
     let calibratedMax = [650, 650, 650, 650, 650];
@@ -96,46 +97,86 @@ namespace mikRobot {
         for (let idx = 1; idx < 16; idx++) {
             setPwm(idx, 0, 0);
         }
-        initialized = true
+        initialized = true;
+	bit_v2 = control.hardwareVersion().charAt(0).compare("1"); // micro:bit v2 needs a slowdown, compare("1") returns 0 if hardware is v1.x
+        let i = 0;
+        let j = 0;
+        let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        setPwm(0, 0, 0); // notCS = low
+        basic.pause(1);  // setup time /CS=0 1.5us+PWM?
+        for (i = 0; i < 12; i++) {  // read all 11 channels
+            for (j = 0; j < 10; j++) {
+                if (j < 4) { //0 to 3 clock transfer channel address (B3 to B0) on MOSI
+                    if ((i >> (3 - j)) & 0x01) {
+                        pins.digitalWritePin(DigitalPin.P15, 1);
+                    } else {
+                        pins.digitalWritePin(DigitalPin.P15, 0);
+                    }
+                }
+                //0 to 9 clock receives the previous conversion result on MISO
+                values[i] <<= 1;
+                if (pins.digitalReadPin(DigitalPin.P14)) {
+                    values[i] |= 0x01;
+                }
+                if (bit_v2) { // micro:bit v2 needs a slowdown
+                    control.waitMicros(1);  // 100ns setup time for address data before clock rise
+                }
+                pins.digitalWritePin(DigitalPin.P13, 1);
+                if (bit_v2) {
+                    control.waitMicros(1);  // min. 190ns clock pulse duration
+                }
+                pins.digitalWritePin(DigitalPin.P13, 0);
+                if (bit_v2) {
+                    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
+                }	
+            }
+            if (bit_v2) { // micro:bit v2 needs a slowdown  
+            control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
+            }
+        }
+        setPwm(0, 0, 4095);  // notCS = high
+        if (values[11] < 400) { // mik:robot v2 A10=5V (range ~770)
+            mik_v1 = true;
+        }
     }
 	
     function initGyro(): void {
     	// 76543210 bit numbers
         
-	i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x00); // Clear sleep mode bit (6), enable all sensors
-	// Delay 100 ms for PLL to get established on x-axis gyro; should check for PLL ready interrupt
-	control.waitMicros(100000);
-	i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x01);  // Set clock source to be PLL with x-axis gyroscope reference, bits 2:0 = 001
-	control.waitMicros(2);
-	i2cwrite(GYRO_ADDRESS, CONFIG, 0x03);  // Configure Gyro and Accelerometer
-	control.waitMicros(2);
-	i2cwrite(GYRO_ADDRESS, SMPLRT_DIV, 0x04); // Use a 200 Hz rate; the same rate set in CONFIG above
-	control.waitMicros(2);
+        i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x00); // Clear sleep mode bit (6), enable all sensors
+        // Delay 100 ms for PLL to get established on x-axis gyro; should check for PLL ready interrupt
+        control.waitMicros(100000);
+        i2cwrite(GYRO_ADDRESS, PWR_MGMT_1, 0x01);  // Set clock source to be PLL with x-axis gyroscope reference, bits 2:0 = 001
+        control.waitMicros(2);
+        i2cwrite(GYRO_ADDRESS, CONFIG, 0x03);  // Configure Gyro and Accelerometer
+        control.waitMicros(2);
+        i2cwrite(GYRO_ADDRESS, SMPLRT_DIV, 0x04); // Use a 200 Hz rate; the same rate set in CONFIG above
+        control.waitMicros(2);
 
-	// Range selects FS_SEL and AFS_SEL are 0 - 3, so 2-bit values are left-shifted into positions 4:3
-	let oldreg = i2cread(GYRO_ADDRESS, GYRO_CONFIG);
-	i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5]
-	control.waitMicros(2);
-	i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0x18); // Clear FS bits [4:3]
-	control.waitMicros(2);		
-	i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg | GSCALE << 3); // Set full scale range for the gyro
-	control.waitMicros(2);		
+        // Range selects FS_SEL and AFS_SEL are 0 - 3, so 2-bit values are left-shifted into positions 4:3
+        let oldreg = i2cread(GYRO_ADDRESS, GYRO_CONFIG);
+        i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5]
+        control.waitMicros(2);
+        i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg & ~0x18); // Clear FS bits [4:3]
+        control.waitMicros(2);		
+        i2cwrite(GYRO_ADDRESS, GYRO_CONFIG, oldreg | GSCALE << 3); // Set full scale range for the gyro
+        control.waitMicros(2);		
 
-	oldreg =  i2cread(GYRO_ADDRESS, ACCEL_CONFIG);
-	i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5] 
-	control.waitMicros(2);		
-	i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0x18); // Clear AFS bits [4:3]
-	control.waitMicros(2);
-	i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg | ASCALE << 3); // Set full scale range for the accelerometer
-	control.waitMicros(2);		
+        oldreg =  i2cread(GYRO_ADDRESS, ACCEL_CONFIG);
+        i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0xE0); // Clear self-test bits [7:5] 
+        control.waitMicros(2);		
+        i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg & ~0x18); // Clear AFS bits [4:3]
+        control.waitMicros(2);
+        i2cwrite(GYRO_ADDRESS, ACCEL_CONFIG, oldreg | ASCALE << 3); // Set full scale range for the accelerometer
+        control.waitMicros(2);		
 
-	// Configure Interrupts and Bypass Enable
-	// Set interrupt pin active high, push-pull, and clear on read of INT_STATUS, enable I2C_BYPASS_EN so additional chips 
-	// can join the I2C bus and all can be controlled by the microbit as master
-	i2cwrite(GYRO_ADDRESS, INT_PIN_CFG, 0x22);
-	control.waitMicros(2);		
-	i2cwrite(GYRO_ADDRESS, INT_ENABLE, 0x01);  // Enable data ready (bit 0) interrupt
-	control.waitMicros(2);
+        // Configure Interrupts and Bypass Enable
+        // Set interrupt pin active high, push-pull, and clear on read of INT_STATUS, enable I2C_BYPASS_EN so additional chips 
+        // can join the I2C bus and all can be controlled by the microbit as master
+        i2cwrite(GYRO_ADDRESS, INT_PIN_CFG, 0x22);
+        control.waitMicros(2);		
+        i2cwrite(GYRO_ADDRESS, INT_ENABLE, 0x01);  // Enable data ready (bit 0) interrupt
+        control.waitMicros(2);
  	    
         gyro_init = true
     }	
@@ -179,73 +220,36 @@ namespace mikRobot {
         if (!initialized) {
             initPCA9685()
         }
-        let i = 0;
-        let j = 0;
-        let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        //pins.digitalWritePin(DigitalPin.P16, 0);
-        setPwm(0, 0, 0);
-        basic.pause(1);  // setup time /CS=0 1.5us+PWM?
-        for (i = 0; i < 12; i++) {  // all 11 channels
-            for (j = 0; j < 10; j++) {
-                if (j < 4) { //0 to 3 clock transfer channel address (B3 to B0) on MOSI
-                    if ((i >> (3 - j)) & 0x01) {
-                        pins.digitalWritePin(DigitalPin.P15, 1);
-                    } else {
-                        pins.digitalWritePin(DigitalPin.P15, 0);
-                    }
-                }
-                //0 to 9 clock receives the previous conversion result on MISO
-                values[i] <<= 1;
-                if (pins.digitalReadPin(DigitalPin.P14)) {
-                    values[i] |= 0x01;
-                }
-		#ifdef mbcodal  // micro:bit v2 needs a slowdown
-		    control.waitMicros(1);  // 100ns setup time for address data before clock rise
-		#endif
-                pins.digitalWritePin(DigitalPin.P13, 1);
-		#ifdef mbcodal
-		    control.waitMicros(1);  // min. 190ns clock pulse duration
-		#endif
-                pins.digitalWritePin(DigitalPin.P13, 0);
-		#ifdef mbcodal
-		    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
-		#endif		
-            }
-	    #ifdef mbcodal  // micro:bit v2 needs a slowdown
-		control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
-	    #endif
-        }
-        //pins.digitalWritePin(DigitalPin.P16, 1);
-        setPwm(0, 0, 4095);
-	if (values[11] > 400) { // mik:robot v2 A10=5V (range ~770)
-		if (pos > 180) {
-		    pos = 180
-		}
-		if (pos < 0) {
-		    pos = 0
-		}
-		if (index == 1) {
-			pins.analogSetPeriod(AnalogPin.P12, 20000);
-		    	pins.servoWritePin(AnalogPin.P12, pos);
-		} else if (index == 2) {
-			pins.analogSetPeriod(AnalogPin.P16, 20000);
-		    	pins.servoWritePin(AnalogPin.P16, pos);
-		}		
-		
-	    
-		/*  old code for PCA9685
-		// map 180 to 4096 (http://wiki.sunfounder.cc/index.php?title=PCA9685_16_Channel_12_Bit_PWM_Servo_Driver)
-		pos = MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0;
-		// pos = DEFAULT_PULSE_WIDTH;
-		// pos = (MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0)/ 1000000 * FREQUENCY * 4096;
 
-		if (index == 1) {
-		    setPwm(8, 0, pos)
-		} else if (index == 2) {
-		    setPwm(9, 0, pos)
-		}
-		*/
-	}
+        if (!mik_v1) {
+            if (pos > 180) {
+                pos = 180
+            }
+            if (pos < 0) {
+                pos = 0
+            }
+            if (index == 1) {
+                pins.analogSetPeriod(AnalogPin.P12, 20000);
+                    pins.servoWritePin(AnalogPin.P12, pos);
+            } else if (index == 2) {
+                pins.analogSetPeriod(AnalogPin.P16, 20000);
+                    pins.servoWritePin(AnalogPin.P16, pos);
+            }		
+            
+            
+            /*  old code for PCA9685
+            // map 180 to 4096 (http://wiki.sunfounder.cc/index.php?title=PCA9685_16_Channel_12_Bit_PWM_Servo_Driver)
+            pos = MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0;
+            // pos = DEFAULT_PULSE_WIDTH;
+            // pos = (MIN_PULSE_WIDTH + pos * (MAX_PULSE_WIDTH-MIN_PULSE_WIDTH)/180.0)/ 1000000 * FREQUENCY * 4096;
+
+            if (index == 1) {
+                setPwm(8, 0, pos)
+            } else if (index == 2) {
+                setPwm(9, 0, pos)
+            }
+            */
+        }  // no code for ELSE, as servo PWM frequency is totally different to motor bridge PWM frequency
     }
 	
     //% blockId=mikRobot_GyroReset block="GyroReset"
@@ -377,24 +381,24 @@ namespace mikRobot {
     //% group="Ultraschall-Sensor"	
     //% weight=80
     export function Ultrasonic(): number {
-	// send pulse
-	pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
-	pins.digitalWritePin(DigitalPin.P1, 0);
-	control.waitMicros(2);
-	pins.digitalWritePin(DigitalPin.P1, 1);
-	control.waitMicros(10);
-	pins.digitalWritePin(DigitalPin.P1, 0);
+        // send pulse
+        pins.setPull(DigitalPin.P1, PinPullMode.PullNone);
+        pins.digitalWritePin(DigitalPin.P1, 0);
+        control.waitMicros(2);
+        pins.digitalWritePin(DigitalPin.P1, 1);
+        control.waitMicros(10);
+        pins.digitalWritePin(DigitalPin.P1, 0);
 
-	// read pulse, timeout 30000us
-	let d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
+        // read pulse, timeout 30000us
+        let d = pins.pulseIn(DigitalPin.P2, PulseValue.High, 30000);
 
-	if (d == 0) {
-		// wrong sensor value or timeout -> result hardcoded to 100cm
-		return 100;
-	} else {
-		// hand-measured factor (instead of 58)
-		return d / 37;
-	}
+        if (d == 0) {
+            // wrong sensor value or timeout -> result hardcoded to 100cm
+            return 100;
+        } else {
+            // hand-measured factor (instead of 58)
+            return d / 37;
+        }
     }
 
     //% blockId=mikRobot_AnalogRead block="AnalogRead1"
@@ -406,7 +410,6 @@ namespace mikRobot {
         }
         let i = 0;
         let j = 0;
-        let channel = 0;
         let values = [0, 0, 0, 0, 0, 0];
         let sensor_values = [0, 0, 0, 0, 0];
         //pins.digitalWritePin(DigitalPin.P16, 0);
@@ -426,21 +429,21 @@ namespace mikRobot {
                 if (pins.digitalReadPin(DigitalPin.P14)) {
                     values[i] |= 0x01;
                 }
-		#ifdef mbcodal  // micro:bit v2 needs a slowdown
-		    control.waitMicros(1);  // 100ns setup time for address data before clock rise
-		#endif
+                if (bit_v2) { // micro:bit v2 needs a slowdown, compare() returns 0 if v1
+                    control.waitMicros(1);  // 100ns setup time for address data before clock rise
+                }
                 pins.digitalWritePin(DigitalPin.P13, 1);
-		#ifdef mbcodal
-		    control.waitMicros(1);  // min. 190ns clock pulse duration
-		#endif
+                if (bit_v2) {
+                    control.waitMicros(1);  // min. 190ns clock pulse duration
+                }
                 pins.digitalWritePin(DigitalPin.P13, 0);
-		#ifdef mbcodal
-		    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
-		#endif		
+                if (bit_v2) {
+                    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
+                }	
             }
-	    #ifdef mbcodal  // micro:bit v2 needs a slowdown
-		control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
-	    #endif
+	        if (bit_v2) { // micro:bit v2 needs a slowdown
+		        control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
+	        }
         }	    
         //pins.digitalWritePin(DigitalPin.P16, 1);
         setPwm(0, 0, 4095);
@@ -589,22 +592,23 @@ namespace mikRobot {
         if (!initialized) {
             initPCA9685()
         }
-        let i = 0;
-        let j = 0;
-        // let channel = 0;
         let value = true;
-        let values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let sensor_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        //pins.digitalWritePin(DigitalPin.P16, 0);
-        setPwm(0, 0, 0); 
-        basic.pause(1);  // setup time /CS=0 1.5us+PWM?
-        for (i = 0; i < 12; i++) {  // all 11 channels
-            for (j = 0; j < 10; j++) {
+
+	if (!mik_v1) {
+		let i = 0;
+        	let j = 0;
+        	// let channel = 0;
+		let values = [0, 0, 0, 0, 0, 0, 0, 0];
+		//pins.digitalWritePin(DigitalPin.P16, 0);
+		setPwm(0, 0, 0); 
+		basic.pause(1);  // setup time /CS=0 1.5us+PWM?
+		for (i = 0; i < 8; i++) {  // only first 7 channels
+		    for (j = 0; j < 10; j++) {
                 if (j < 4) { //0 to 3 clock transfer channel address (B3 to B0) on MOSI
                     if ((i >> (3 - j)) & 0x01) {
-                        pins.digitalWritePin(DigitalPin.P15, 1);
+                    pins.digitalWritePin(DigitalPin.P15, 1);
                     } else {
-                        pins.digitalWritePin(DigitalPin.P15, 0);
+                    pins.digitalWritePin(DigitalPin.P15, 0);
                     }
                 }
                 //0 to 9 clock receives the previous conversion result on MISO
@@ -612,35 +616,29 @@ namespace mikRobot {
                 if (pins.digitalReadPin(DigitalPin.P14)) {
                     values[i] |= 0x01;
                 }
-		#ifdef mbcodal  // micro:bit v2 needs a slowdown
-		    control.waitMicros(1);  // 100ns setup time for address data before clock rise
-		#endif
+                if (bit_v2) { // micro:bit v2 needs a slowdown, compare() returns 0 if v1
+                    control.waitMicros(1);  // 100ns setup time for address data before clock rise
+                }
                 pins.digitalWritePin(DigitalPin.P13, 1);
-		#ifdef mbcodal
-		    control.waitMicros(1);  // min. 190ns clock pulse duration
-		#endif
+                if (bit_v2) {
+                    control.waitMicros(1);  // min. 190ns clock pulse duration
+                }
                 pins.digitalWritePin(DigitalPin.P13, 0);
-		#ifdef mbcodal
-		    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
-		#endif		
-            }
-	    #ifdef mbcodal  // micro:bit v2 needs a slowdown
-		control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
-	    #endif
-	}
-	
-        //pins.digitalWritePin(DigitalPin.P16, 1);
-        setPwm(0, 0, 4095);
-        for (i = 0; i < 12; i++) {
-            sensor_values[i] = values[i + 1];
-        }
-	if (sensor_values[10] > 400) { // mik:robot v2 A10=5V (range ~770)
+                if (bit_v2) {
+                    control.waitMicros(1);  // max. 240ns MISO valid after clock fall
+                }	
+		    }
+		    if (bit_v2) { // micro:bit v2 needs a slowdown
+			control.waitMicros(22);  // ADC conversion time 21us+10 clocks 
+		    }
+		}
+		setPwm(0, 0, 4095);	
 		if (index == 0x01) {
-		    if (sensor_values[5] > 400) {  // A5 = 0 .. 1023 (low=40, high=770)
+		    if (values[6] > 400) {  // A5 = 0 .. 1023 (low=40, high=770)
 			value = false;
 		    }
 		} else {
-		    if (sensor_values[6] > 400) {  // A6 (DSR)
+		    if (values[7] > 400) {  // A6 (DSR)
 			value = false;
 		    }
 		}
@@ -659,4 +657,4 @@ namespace mikRobot {
 	}		
         return value;
     }
-}   
+}   // end namespace
