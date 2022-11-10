@@ -1,6 +1,6 @@
 {
     "name": "mikRobot",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Extension for mikRobot",
     "license": "MIT",
     "icon": "./icon.png",
